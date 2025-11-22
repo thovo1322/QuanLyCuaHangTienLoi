@@ -71,7 +71,7 @@ namespace QuanLyCuaHangTienLoi.Areas.Admin.Controllers
 
                     sp.NgayTao = DateTime.Now;
                     sp.TrangThai = "Còn hàng";
-                    sp.FkMaNguoiTao = 2;
+                    sp.FkMaNguoiTao = 3;
                     dataContext.Add(sp);
                     await dataContext.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
@@ -118,15 +118,28 @@ namespace QuanLyCuaHangTienLoi.Areas.Admin.Controllers
                 return NotFound();
                
             }
-            
-            
+            ViewBag.DanhMucs = new SelectList(
+                dataContext.DanhMucs.ToList(),
+                "MaDanhMuc",      // Tên thuộc tính dùng làm Value (giá trị lưu vào DB)
+                "Ten"     // Tên thuộc tính dùng làm Text (giá trị hiển thị)
+
+            );
+
+            // Tạo SelectList cho Nhà Cung Cấp
+            ViewBag.NhaCungCaps = new SelectList(
+                dataContext.NhaCungCaps.ToList(),
+                "MaNcc",          // Tên thuộc tính dùng làm Value
+                "TenNcc"        // Tên thuộc tính dùng làm Text
+
+            );
+
             return View(sp);
         }
 
         // POST: SanPhams/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditSP(int id, SanPham sp)
+        public async Task<IActionResult> EditSP(SanPham sp)
         {
             //       if (id != sp.MaSanPham)
             //       {
@@ -164,17 +177,33 @@ namespace QuanLyCuaHangTienLoi.Areas.Admin.Controllers
             //       return View(sp);
             //   }
             {
-                if (id != sp.MaSanPham)
-                    return NotFound();
-
                 if (ModelState.IsValid)
                 {
                     try
                     {
+                        var existingSp = dataContext.SanPhams.Find(sp.MaSanPham);
+
+                        if (existingSp == null) {
+                            return NotFound();
+                        }
+                        existingSp.FkMaDanhMuc = sp.FkMaDanhMuc;
+                        existingSp.MaNcc = sp.MaNcc;
+                        existingSp.Ten = sp.Ten;
+                        existingSp.GiaBan = sp.GiaBan;
+                        existingSp.GiaVon = sp.GiaVon;
+                        existingSp.SoLuong = sp.SoLuong;
                         // BỎ QUA ModelState, ép EF hiểu là đang sửa
-                        dataContext.Entry(sp).State = EntityState.Modified;
+                        if (existingSp.SoLuong > 0)
+                        {
+                            existingSp.TrangThai = "Còn hàng";
+                        }
+                        else {
+                            existingSp.TrangThai = "Hết hàng";
+                        }
+                        
+                        dataContext.SanPhams.Update(existingSp);
                         await dataContext.SaveChangesAsync();
-                        return RedirectToAction(nameof(Index));
+                        return RedirectToAction("Index");
                     }
                     catch (Exception ex)
                     {
@@ -185,6 +214,7 @@ namespace QuanLyCuaHangTienLoi.Areas.Admin.Controllers
                 // Set lại dropdown
                 ViewBag.DanhMucs = new SelectList(dataContext.DanhMucs.ToList(), "MaDanhMuc", "Ten");
                 ViewBag.NhaCungCaps = new SelectList(dataContext.NhaCungCaps.ToList(), "MaNcc", "TenNcc");
+
 
                 return View(sp);
             }

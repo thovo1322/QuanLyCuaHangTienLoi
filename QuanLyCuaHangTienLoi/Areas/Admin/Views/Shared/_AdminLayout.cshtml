@@ -1,0 +1,39 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] T System</title>
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body style="background-color:#f5f5f5;">
+    <header class="navbar">
+        <div class="logo">
+            <img src="~Assets/images/Ảnh chụp màn hình 2025-10-25 144138.png" alt="TMart" />
+        </div>
+        <h2>Trang Quản Trị - Admin</h2>
+        <nav>
+            <nav class="menu">
+                <a href="#">Quản lý hàng hóa</a>
+                <a href="#">Kết ca</a>
+                <a href="#">Báo cáo</a>
+        </nav>
+            <div class="user">
+                <span>M001</span>
+            </div>
+    </header>
+    <main class="container">
+        @RenderBody()
+    </main>
+    @* <section style="margin:20px;"> *@
+    @*     @RenderBody() *@
+    @* </section> *@
+
+    <footer>
+        <p>© 2025 TMart Digital System</p>
+    </footer>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,49 @@
+﻿@model IEnumerable<QuanLyCuaHangTienLoi.Models.SanPham>
+
+<h2>Quản lý sản phẩm</h2>
+
+<form method="get" asp-action="Index">
+    <input type="text" name="search" placeholder="Tìm theo tên hoặc mã vạch..." />
+    <button type="submit" class="btn btn-primary">Tìm</button>
+</form>
+
+<a asp-action="Create" class="btn btn-success mt-3">+ Thêm sản phẩm</a>
+@if (TempData["SuccessMessage"] != null)
+{
+    @* <div class="alert alert-success alert-dismissible fade show" role="alert"> *@
+    @*     @TempData["SuccessMessage"] *@
+    @*     <button type="button" class="btn-close" data-bs-dismiss="alert"></button> *@
+    @* </div> *@
+}
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Tên</th>
+            <th>Mã vạch</th>
+            <th>Giá bán</th>
+            <th>Số lượng</th>
+            <th>Danh mục</th>
+            <th>Nhà cung cấp</th>
+            <th>Trạng thái</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var sp in Model)
+        {
+            <tr>
+                <td>@sp.Ten</td>
+                <td>@sp.MaVach</td>
+                <td>@sp.GiaBan.ToString("N0") đ</td>
+                <td>@sp.SoLuong</td>
+                <td>@sp.FkMaDanhMucNavigation?.Ten</td>
+                <td>@sp.MaNccNavigation?.TenNcc</td>
+                <td>@sp.TrangThai</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@sp.MaSanPham" class="btn btn-sm btn-warning">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@sp.MaSanPham" class="btn btn-sm btn-danger">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

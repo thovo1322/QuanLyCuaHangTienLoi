@@ -1,0 +1,31 @@
+﻿@model IEnumerable<QuanLyCuaHangTienLoi.Models.LoaiSanPham>
+
+<h2>Quản lý loại sản phẩm</h2>
+
+<a asp-action="Create" class="btn btn-success mt-3">+ Thêm loại sản phẩm</a>
+
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Mã Loại</th>
+            <th>Tên Loại</th>
+            <th>Mã Danh Mục</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var lsp in Model)
+        {
+            <tr>
+                <td>@lsp.MaLoai</td>
+                <td>@lsp.TenLoai</td>
+                <td>@lsp.MaDanhMuc</td>
+                @* <td>@lsp.MaDanhMucNavigation.Ten</td> *@
+                <td>
+                    <a asp-action="Edit" asp-route-id="@lsp.MaLoai" class="btn btn-sm btn-warning">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@lsp.TenLoai" class="btn btn-sm btn-danger">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

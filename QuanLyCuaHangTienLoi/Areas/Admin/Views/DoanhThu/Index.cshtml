@@ -1,0 +1,208 @@
+@model QuanLyCuaHangTienLoi.Areas.Admin.Controllers.DoanhThuViewModel
+@{
+    ViewData["Title"] = "Quản lý doanh thu";
+    
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">💰 Quản lý doanh thu</h1>
+        <a asp-action="Details" class="btn btn-primary btn-sm">
+            <i class="fas fa-chart-line fa-sm text-white-50"></i> Xem chi tiết
+        </a>
+    </div>
+
+    <!-- Thống kê tổng quan -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Tổng doanh thu
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalRevenue.ToString("N0") VNĐ</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300">💰</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Doanh thu hôm nay
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TodayRevenue.ToString("N0") VNĐ</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-day fa-2x text-gray-300">📅</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Doanh thu tháng này
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ThisMonthRevenue.ToString("N0") VNĐ</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-alt fa-2x text-gray-300">📊</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Giá trị đơn hàng TB
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.AverageOrderValue.ToString("N0") VNĐ</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-bar fa-2x text-gray-300">📈</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Biểu đồ doanh thu theo tháng -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">📊 Doanh thu theo tháng</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top sản phẩm bán chạy -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">🏆 Top sản phẩm bán chạy</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.TopProducts.Any())
+                    {
+                        <div class="list-group">
+                            @for (int i = 0; i < Model.TopProducts.Count; i++)
+                            {
+                                var product = Model.TopProducts[i];
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>@(i + 1). @product.ProductName</strong><br>
+                                        <small class="text-muted">@product.TotalQuantity sản phẩm</small>
+                                    </div>
+                                    <span class="badge badge-primary badge-pill">@product.TotalRevenue.ToString("N0") VNĐ</span>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-chart-line fa-3x mb-3"></i>
+                            <p>Chưa có dữ liệu sản phẩm</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bộ lọc thời gian -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">🔍 Xem doanh thu theo khoảng thời gian</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Details" method="get" class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">Từ ngày:</label>
+                            <input type="date" name="startDate" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Đến ngày:</label>
+                            <input type="date" name="endDate" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary d-block">
+                                <i class="fas fa-search"></i> Xem chi tiết
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Biểu đồ doanh thu theo tháng
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [
+                @foreach (var month in Model.RevenueByMonth)
+                {
+                    <text>'@month.MonthName',</text>
+                }
+            ],
+            datasets: [{
+                label: 'Doanh thu (VNĐ)',
+                data: [
+                    @foreach (var month in Model.RevenueByMonth)
+                    {
+                        <text>@month.Revenue,</text>
+                    }
+                ],
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('vi-VN') + ' VNĐ';
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>

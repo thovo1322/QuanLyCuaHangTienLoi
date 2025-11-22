@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Trang quản trị</title>
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body style="background-color:#f5f5f5;">
+    <header style="background-color:#444; color:white; padding:10px;">
+        <h2>🔧 Trang Quản Trị - Admin</h2>
+        <nav>
+            <a href="/Admin" style="color:white;">Trang chính</a> |
+            <a href="/Admin/SanPham" style="color:white;">Quản lý sản phẩm</a> |
+            <a href="/Admin/DonHang" style="color:white;">Đơn hàng</a> |
+            <a href="/">Về cửa hàng</a>
+        </nav>
+    </header>
+
+    <section style="margin:20px;">
+        @RenderBody()
+    </section>
+
+    <footer style="background:#222; color:white; text-align:center; padding:10px;">
+        <p>Admin Panel © @DateTime.Now.Year</p>
+    </footer>
+</body>
+</html>

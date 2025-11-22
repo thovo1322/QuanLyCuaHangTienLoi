@@ -1,0 +1,103 @@
+@model QuanLyCuaHangTienLoi.Models.NhanVien
+@{
+    ViewData["Title"] = "Thêm nhân viên";
+   
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">👥 Thêm nhân viên mới</h1>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin nhân viên</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="NhanVien" method="post" asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="MaNv" class="control-label">Mã nhân viên</label>
+                                    <input asp-for="MaNv" class="form-control" />
+                                    <span asp-validation-for="MaNv" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="TenNv" class="control-label">Tên nhân viên</label>
+                                    <input asp-for="TenNv" class="form-control" />
+                                    <span asp-validation-for="TenNv" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="IdChucvu" class="control-label">Chức vụ</label>
+                                    <select asp-for="IdChucvu" class="form-control" asp-items="ViewBag.IdChucvu">
+                                        <option value="">-- Chọn chức vụ --</option>
+                                    </select>
+                                    <span asp-validation-for="IdChucvu" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Luongcoban" class="control-label">Lương cơ bản</label>
+                                    <input asp-for="Luongcoban" class="form-control" type="number" />
+                                    <span asp-validation-for="Luongcoban" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Phucap" class="control-label">Phụ cấp</label>
+                                    <input asp-for="Phucap" class="form-control" type="number" />
+                                    <span asp-validation-for="Phucap" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Lưu
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Hủy
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">💡 Lưu ý</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> Mật khẩu mặc định: <strong>123456</strong></li>
+                        <li><i class="fas fa-check text-success"></i> Nhân viên có thể đổi mật khẩu sau khi đăng nhập</li>
+                        <li><i class="fas fa-check text-success"></i> Admin có thể reset mật khẩu bất kỳ lúc nào</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

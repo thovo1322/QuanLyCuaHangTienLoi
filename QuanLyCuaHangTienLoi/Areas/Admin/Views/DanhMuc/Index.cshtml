@@ -1,0 +1,195 @@
+@model IEnumerable<QuanLyCuaHangTienLoi.Models.DanhMuc>
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Quản lý danh mục sản phẩm</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .header {
+      background-color: #00b4d8;
+      color: white;
+      padding: 12px 20px;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 10px;
+    }
+
+    .category {
+      background-color: white;
+      margin-top: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #333;
+      background-color: #f1faff;
+      transition: 0.2s;
+    }
+
+    .category-header:hover {
+      background-color: #e1f4ff;
+    }
+
+    .arrow {
+      transition: transform 0.3s ease;
+    }
+
+    .category-content {
+      display: none;
+      padding: 0 20px 15px;
+      background-color: #fff;
+    }
+
+    .category-content ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .category-content li {
+      list-style-type: circle;
+      color: #555;
+      margin: 8px 0;
+    }
+
+    .active .category-content {
+      display: block;
+    }
+
+    .active .arrow {
+      transform: rotate(90deg);
+    }
+  </style>
+</head>
+<body>
+
+
+
+  <div class="header">🛒 Quản lý danh mục</div>
+   
+  
+    @* <div class="category-header" onclick="toggleCategory(this)"> *@
+            
+    @*   <span>Đồ uống</span> *@
+    @*   <span class="arrow">▶</span> *@
+    @*   </div> *@
+    @foreach (var item in Model)
+                    {
+        <div class="category">
+        <div class="category-header" onclick="toggleCategory(this)">
+                <h6>@item.Ten</h6>
+                <span class="arrow">▶</span>
+                </div>
+            <div class="category-content">
+                @if (item.LoaiSanPhams != null && item.LoaiSanPhams.Any())
+                {
+                    <ul>
+                        @foreach (var loai in item.LoaiSanPhams)
+                        {
+                            <li>@loai.TenLoai</li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p>Không có loại sản phẩm nào thuộc danh mục này.</p>
+                }
+                @* Bạn có thể thêm các nút Edit/Delete/Details ở đây nếu muốn *@
+            </div>
+        </div>
+                    }
+        
+        @* <div class="category-content"> *@
+        @*     <table> *@
+        @*         <tbody> *@
+        @*             @foreach (var item in Model) *@
+        @*             { *@
+                        
+                        @* <tr> *@
+                          
+                        @*     @* <td>@item.MoTa</td> *@ 
+                        @*     <li> *@
+                        @*         <a href="#" class="danhmuc-link" data-id="@item.MaDanhMuc">@item.Ten</a> *@
+                        @*         <div id="loai-container-@item.MaDanhMuc"></div> *@
+                        @*     </li> *@
+                        @*     @section scripts { *@
+                        @*         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> *@
+                        @*         <script> *@
+                        @*             $(document).ready(function(){ *@
+                        @*                 $(".danhmuc-link").click(function(e){ *@
+                        @*                     e.preventDefault(); *@
+                        @*                     var id = $(this).data("id"); *@
+                        @*                     $("#loai-container-" + id).load("/DanhMuc/LoaiByDanhMuc/" + id); *@
+                        @*                 }); *@
+                        @*             }); *@
+                        @*         </script> *@
+                        @* } *@
+                        @* </tr> *@
+                         
+                    @* <ul> *@
+                    @*     @foreach(var loai in item.LoaiSanPhams) *@
+                    @*     { *@
+                    @*         <li>@loai.TenLoai</li> *@
+                               
+                    @*      } *@
+                    @*     </ul> *@
+                    }
+           
+                </tbody>
+            </table>
+    </div>
+    
+ 
+
+        @* <tbody> *@
+        @*     @foreach (var item in Model) *@
+        @*     { *@
+        @*         <tr> *@
+        @*             <td>@item.MaDanhMuc</td> *@
+        @*             <td>@item.Ten</td> *@
+        @*             <td>@item.MoTa</td> *@
+        @*             <td>@item.TrangThai</td> *@
+                   
+        @*             <td> *@
+        @*                 <div class="btn-group" role="group"> *@
+        @*                     <a asp-action="Details" asp-route-id="@item.MaDanhMuc" class="btn btn-info btn-sm"> *@
+        @*                         <i class="fas fa-eye"></i> *@
+        @*                     </a> *@
+
+        @*                     <a asp-action="Edit" asp-route-id="@item.MaDanhMuc" class="btn btn-warning btn-sm"> *@
+        @*                         <i class="fas fa-edit"></i> *@
+        @*                     </a> *@
+                            
+        @*                     <a asp-action="Delete" asp-route-id="@item.MaDanhMuc" class="btn btn-danger btn-sm" *@
+        @*                        onclick="return confirm('Bạn có chắc muốn xóa danh m này?')"> *@
+        @*                         <i class="fas fa-trash"></i> *@
+        @*                     </a> *@
+        @*                 </div> *@
+        @*             </td> *@
+        @*         </tr> *@
+        @*     } *@
+        @* </tbody> *@
+  </div>
+
+  <script>
+    function toggleCategory(element) {
+      element.parentElement.classList.toggle("active");
+    }
+  </script>
+</body>
+</html>

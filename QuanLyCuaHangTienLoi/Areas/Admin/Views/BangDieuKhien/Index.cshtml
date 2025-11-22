@@ -1,0 +1,249 @@
+@model QuanLyCuaHangTienLoi.Areas.Admin.Controllers.BangDieuKhienViewModel
+@{
+    ViewData["Title"] = "Quản Lý";
+    
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h3 mb-0 text-gray-800 text-align:center">Hệ Thống Quản Lý</h1>
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-3 ">
+                    <a asp-area="Admin" asp-controller="DangNhap" asp-action="DangXuat" class="btn btn-outline-danger btn-block h-100">
+                        <i class="fas fa-sign-out-alt fa-2x mb-2"></i><br>
+                        <strong>🚪 Đăng xuất</strong><br>
+                       
+                    </a>
+                </div>
+                @* <div class="text-muted"> *@
+                @*     Xin chào, @Context.Session.GetString("AdminName") *@
+                @* </div> *@
+            </div>
+        </div>
+    </div>
+
+    <!-- Thống kê tổng quan -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Lượt khách
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalOrders</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300">👥</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Tổng sản phẩm
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalProducts</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-box fa-2x text-gray-300">📦</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Doanh thu
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalRevenue.ToString("N0") VNĐ</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300">💰</i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Đơn Giá
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.RecentOrders.Count</div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">🎛️Menu quản lý</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Quản lý nhân viên -->
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                            <a asp-area="Admin" asp-controller="NhanVien" asp-action="Index" class="btn btn-outline-primary btn-block h-100">
+                                <i class="fas fa-users fa-2x mb-2"></i><br>
+                                <strong style="text-align:center">👥 Quản lý nhân viên</strong><br>
+                                @* <small>Thêm, sửa, xóa, phân ca nhân viên</small> *@
+                            </a>
+                        </div>
+
+                        <!-- Quản lý danh mục -->
+                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3"> 
+                             <a asp-area="Admin" asp-controller="DanhMuc" asp-action="Index" class="btn btn-outline-info btn-block h-100"> 
+                                <i class="fas fa-tags fa-2x mb-2"></i><br> 
+                                 <strong>📦 Quản lý danh mục</strong><br> 
+                                 
+                             </a> 
+                         </div> 
+
+                        <!-- Quản lý sản phẩm -->
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                            <a asp-area="Admin" asp-controller="SanPham" asp-action="Index" class="btn btn-outline-success btn-block h-100">
+                                <i class="fas fa-box fa-2x mb-2"></i><br>
+                                <strong>🛍️ Quản lý sản phẩm</strong><br>
+                                @* <small>Thêm, sửa sản phẩm</small> *@
+                            </a>
+                        </div> 
+                        <!-- Quản lý loại sản phẩm -->
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                            <a asp-area="Admin" asp-controller="LoaiSanPham" asp-action="Index" class="btn btn-outline-success btn-block h-100">
+                                <i class="fas fa-box fa-2x mb-2"></i><br>
+                                <strong>🛍️ Quản lý loại sản phẩm</strong><br>
+                                @* <small>Thêm, sửa sản phẩm</small> *@
+                            </a>
+                        </div>
+                        <!-- Quản lý nhà cung cấp -->
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3"> 
+                             <a asp-area="admin" asp-controller="NhaCungCap" asp-action="index" class="btn btn-outline-warning btn-block h-100"> 
+                                 <i class="fas fa-shopping-cart fa-2x mb-2"></i><br>
+                                <strong>📦 quản lý nhà cung cấp</strong><br>
+                            </a>
+                         </div> 
+
+                        <!-- Quản lý tồn kho -->
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                            <a href="#" class="btn btn-outline-secondary btn-block h-100">
+                                <i class="fas fa-warehouse fa-2x mb-2"></i><br>
+                                <strong>📊 Quản lý tồn kho</strong><br>
+                                @* <small>Kiểm tra hàng tồn</small> *@
+                            </a>
+                        </div>
+
+                        <!-- Đặt hàng -->
+                        @* <div class="col-lg-3 col-md-4 col-sm-6 mb-3"> *@
+                        @*     <a href="#" class="btn btn-outline-dark btn-block h-100"> *@
+                        @*         <i class="fas fa-truck fa-2x mb-2"></i><br> *@
+                        @*         <strong>🚚 Đặt hàng</strong><br> *@
+                        @* <small>Đặt hàng từ nhà cung cấp</small> *@
+                        @*     </a> *@
+                        @* </div> *@
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                            <a asp-area="admin" asp-controller="DonHang" asp-action="index" class="btn btn-outline-warning btn-block h-100">
+                                <i class="fas fa-shopping-cart fa-2x mb-2"></i><br>
+                                <strong>📦 Đặt hàng</strong><br>
+                            </a>
+                        </div>
+                        <!-- Kết ca -->
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                            <a href="#" class="btn btn-outline-primary btn-block h-100">
+                                <i class="fas fa-money-bill fa-2x mb-2"></i><br>
+                                <strong>💰 Kết ca</strong><br>
+                                @* <small>kết ca tổng doanh thu ngày</small> *@
+                            </a>
+                        </div>
+
+                        <!-- Đăng xuất -->
+                        @* <div class="col-lg-3 col-md-4 col-sm-6 mb-3 "> *@
+                        @*     <a asp-area="Admin" asp-controller="DangNhap" asp-action="DangXuat" class="btn btn-outline-danger btn-block h-100"> *@
+                        @*         <i class="fas fa-sign-out-alt fa-2x mb-2"></i><br> *@
+                        @*         <strong>🚪 Đăng xuất</strong><br> *@
+                        @*         <small>Thoát khỏi hệ thống</small> *@
+                        @*     </a> *@
+                        @* </div> *@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Đơn hàng gần đây -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">📋 Danh Sách Giao Dịch</h6>
+                    <a asp-area="Admin" asp-controller="HoaDon" asp-action="Index" class="btn btn-primary btn-sm">
+                        Xem tất cả
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentOrders.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Mã hóa đơn</th>
+                                        <th>Nhân viên</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Tổng tiền</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.RecentOrders)
+                                    {
+                                        <tr>
+                                            <td>#@order.MaDonHang</td>
+                                            <td>@order.FkMaNvNavigation?.HoTen</td>
+                                            <td>@order.NgayTao?.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>@order.TongTienSauGiam.ToString("N0") VNĐ</td>
+                                            <td>
+                                                <span class="badge badge-success">Hoàn thành</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>Chưa có giao dịch nào</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu quản lý -->
+    

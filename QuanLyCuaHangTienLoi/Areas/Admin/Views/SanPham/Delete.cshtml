@@ -18,31 +18,59 @@
                     <h6 class="m-0 font-weight-bold text-primary">Thông tin sản phẩm</h6>
                 </div>
                 <div class="card-body">
+                    @if (ViewBag.HasRelatedRecords == true)
+                    {
+                        <div class="alert alert-warning">
+                            <h6><i class="fas fa-exclamation-triangle"></i> Cảnh báo: Sản phẩm này có dữ liệu liên quan:</h6>
+                            <ul>
+                                @if (ViewBag.TonKhoCount > 0)
+                                {
+                                    <li>@ViewBag.TonKhoCount bản ghi tồn kho (sẽ được xóa tự động)</li>
+                                }
+                                @if (ViewBag.ChiTietDonHangCount > 0)
+                                {
+                                    <li>@ViewBag.ChiTietDonHangCount đơn hàng liên quan (không thể xóa sản phẩm này)</li>
+                                }
+                                @if (ViewBag.GiaoDichKhoCount > 0)
+                                {
+                                    <li>@ViewBag.GiaoDichKhoCount giao dịch kho (sẽ được xóa tự động)</li>
+                                }
+                            </ul>
+                            @if (ViewBag.ChiTietDonHangCount > 0)
+                            {
+                                <p class="mb-0"><strong>Không thể xóa sản phẩm này vì đang có đơn hàng liên quan!</strong></p>
+                            }
+                        </div>
+                    }
+                    
                     <form asp-controller="SanPham" method="post" asp-action="Delete">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="MaSanPham" />
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
                         <div class="form-group">
-                            <label>Tên sản phẩm</label>
-                            <input asp-for="Ten" class="form-control" />
+                            <label><strong>Tên sản phẩm</strong></label>
+                            <input asp-for="Ten" class="form-control" readonly />
                         </div>
 
                         <div class="form-group">
-                            <label>Mã vạch</label>
-                            <input asp-for="MaVach" class="form-control" />
+                            <label><strong>Mã vạch</strong></label>
+                            <input asp-for="MaVach" class="form-control" readonly />
                         </div>
 
                         <div class="form-group">
-                            <label>Giá bán</label>
-                            <input asp-for="GiaBan" class="form-control" />
+                            <label><strong>Giá bán</strong></label>
+                            <input asp-for="GiaBan" class="form-control" readonly />
                         </div>
 
                         <div class="form-group">
-                            <label>Giá vốn</label>
-                            <input asp-for="GiaVon" class="form-control" />
+                            <label><strong>Giá vốn</strong></label>
+                            <input asp-for="GiaVon" class="form-control" readonly />
                         </div>
 
                         <div class="form-group">
-                            <label>Số lượng</label>
-                            <input asp-for="SoLuong" class="form-control" />
+                            <label><strong>Số lượng</strong></label>
+                            <input asp-for="SoLuong" class="form-control" readonly />
                         </div>
 
                         @* <div class="form-group">   *@
@@ -83,11 +111,27 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Mô tả</label>
-                            <textarea asp-for="MoTa" class="form-control"></textarea>
+                            <label><strong>Mô tả</strong></label>
+                            <textarea asp-for="MoTa" class="form-control" readonly></textarea>
                         </div>
 
-                        <button type="submit" class="btn btn-primary mt-3">Xóa</button>
+                        <div class="form-group mt-4">
+                            @if (ViewBag.ChiTietDonHangCount > 0)
+                            {
+                                <button type="button" class="btn btn-secondary" onclick="window.location.href='@Url.Action("Index")'">
+                                    <i class="fas fa-arrow-left"></i> Quay lại
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này? Hành động này không thể hoàn tác!');">
+                                    <i class="fas fa-trash"></i> Xác nhận xóa
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Hủy
+                                </a>
+                            }
+                        </div>
                     </form>
                 </div>
             </div>

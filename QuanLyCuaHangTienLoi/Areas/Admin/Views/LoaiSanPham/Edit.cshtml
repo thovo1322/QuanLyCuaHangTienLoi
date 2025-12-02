@@ -1,0 +1,59 @@
+@model QuanLyCuaHangTienLoi.Models.LoaiSanPham
+
+@{
+    ViewData["Title"] = "Sửa loại sản phẩm";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Sửa loại sản phẩm</h1>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-primary text-white">
+                    <h6 class="m-0 font-weight-bold">Chỉnh sửa thông tin loại sản phẩm</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="LoaiSanPham" method="post" asp-action="Edit">
+                        @Html.AntiForgeryToken()
+                        
+                        <input type="hidden" asp-for="MaLoai" />
+                        
+                        <div class="form-group">
+                            <label asp-for="TenLoai" class="font-weight-bold">Tên loại <span class="text-danger">*</span></label>
+                            <input asp-for="TenLoai" class="form-control" required />
+                            <span asp-validation-for="TenLoai" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label asp-for="MaDanhMuc" class="font-weight-bold">Danh mục <span class="text-danger">*</span></label>
+                            <select asp-for="MaDanhMuc" asp-items="ViewBag.MaDanhMuc" class="form-control" required>
+                                <option value="">-- Chọn danh mục --</option>
+                            </select>
+                            <span asp-validation-for="MaDanhMuc" class="text-danger"></span>
+                        </div>
+
+                        <hr />
+                        
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Cập nhật
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-ban"></i> Hủy
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

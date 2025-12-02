@@ -1,0 +1,219 @@
+@{
+    ViewData["Title"] = "Cập nhật tồn kho - Xuất kho";
+    var sanPham = ViewBag.SanPham as QuanLyCuaHangTienLoi.Models.SanPham;
+    var tonKhoHienTai = ViewBag.TonKhoHienTai as int? ?? 0;
+    var lichSuGiaoDich = ViewBag.LichSuGiaoDich as List<QuanLyCuaHangTienLoi.Models.GiaoDichKho> ?? new List<QuanLyCuaHangTienLoi.Models.GiaoDichKho>();
+    var sanPhams = ViewBag.SanPhams as List<QuanLyCuaHangTienLoi.Models.SanPham> ?? new List<QuanLyCuaHangTienLoi.Models.SanPham>();
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">📝 Cập nhật tồn kho - Xuất kho</h1>
+        <div>
+            <a asp-area="Admin" asp-controller="BangDieuKhien" asp-action="Index" class="btn btn-secondary btn-sm me-2">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+            <a asp-action="HuyHang" class="btn btn-danger btn-sm">
+                <i class="fas fa-trash-alt"></i> Hủy hàng
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Cập nhật tồn kho</h6>
+                </div>
+                <div class="card-body">
+                    <!-- Chọn sản phẩm -->
+                    <form method="get" asp-action="CapNhatTonKho" class="mb-4">
+                        <div class="form-group">
+                            <label>Chọn sản phẩm:</label>
+                            <select name="maSanPham" class="form-control" onchange="this.form.submit()">
+                                <option value="">-- Chọn sản phẩm --</option>
+                                @foreach (var sp in sanPhams)
+                                {
+                                    <option value="@sp.MaSanPham" selected="@(sanPham?.MaSanPham == sp.MaSanPham)">
+                                        @sp.MaSanPham - @sp.Ten
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    </form>
+
+                    @if (sanPham == null)
+                    {
+                        <div class="alert alert-info text-center py-5">
+                            <i class="fas fa-info-circle fa-3x mb-3 text-primary"></i>
+                            <h5>Chưa chọn sản phẩm</h5>
+                            <p class="text-muted">Vui lòng chọn sản phẩm từ danh sách bên trên để cập nhật tồn kho</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <form method="post" asp-action="CapNhatTonKho">
+                            <input type="hidden" name="maSanPham" value="@sanPham.MaSanPham" />
+                            
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-info-circle"></i> Thông tin sản phẩm</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>Mã sản phẩm:</strong> @sanPham.MaSanPham<br>
+                                        <strong>Tên sản phẩm:</strong> @sanPham.Ten<br>
+                                        <strong>Mã vạch:</strong> @(sanPham.MaVach ?? "-")
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Danh mục:</strong> @(sanPham.FkMaDanhMucNavigation?.Ten ?? "-")<br>
+                                        <strong>Loại sản phẩm:</strong> @(sanPham.MaLoaiConNavigation?.TenLoai ?? "-")<br>
+                                        <strong>Tồn kho hiện tại:</strong> <span class="text-primary font-weight-bold">@tonKhoHienTai</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">
+                                    <strong>Loại giao dịch:</strong> <span class="text-danger">*</span>
+                                </label>
+                                <select name="loaiGiaoDich" class="form-control" required onchange="toggleSoLuongInput()">
+                                    <option value="">-- Chọn loại giao dịch --</option>
+                                    <option value="Nhập kho">Nhập kho</option>
+                                    <option value="Xuất kho">Xuất kho</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">
+                                    <strong>Số lượng:</strong> <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" name="soLuong" id="soLuongInput" 
+                                       class="form-control form-control-lg text-center" 
+                                       min="1" required
+                                       style="font-size: 24px; font-weight: bold;" />
+                                <small class="form-text text-muted" id="soLuongHint">
+                                    Nhập số lượng cần nhập hoặc xuất
+                                </small>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Ghi chú:</label>
+                                <textarea name="ghiChu" class="form-control" rows="3" 
+                                          placeholder="Ví dụ: Nhập hàng từ nhà cung cấp ABC, Xuất hàng hỏng..."></textarea>
+                            </div>
+
+                            <div class="alert alert-warning" id="xuatKhoWarning" style="display: none;">
+                                <i class="fas fa-exclamation-triangle"></i> 
+                                <strong>Lưu ý:</strong> Số lượng xuất không được vượt quá số lượng tồn kho hiện tại (<strong>@tonKhoHienTai</strong>)
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save"></i> Lưu giao dịch
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-times"></i> Hủy
+                                </a>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+
+            <!-- Lịch sử giao dịch -->
+            @if (sanPham != null && lichSuGiaoDich.Any())
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Lịch sử giao dịch kho</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Ngày giờ</th>
+                                        <th>Loại giao dịch</th>
+                                        <th>Số lượng</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var gd in lichSuGiaoDich)
+                                    {
+                                        <tr>
+                                            <td>@(gd.NgayTao?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                                            <td>
+                                                @if (gd.LoaiGiaoDich.Contains("Nhập"))
+                                                {
+                                                    <span class="badge badge-success">@gd.LoaiGiaoDich</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-danger">@gd.LoaiGiaoDich</span>
+                                                }
+                                            </td>
+                                            <td>@gd.SoLuong</td>
+                                            <td>
+                                                <span class="badge badge-info">@(gd.TrangThai ?? "-")</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">💡 Hướng dẫn</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> <strong>Nhập kho:</strong> Thêm hàng vào kho (tồn kho tăng)</li>
+                        <li><i class="fas fa-check text-success"></i> <strong>Xuất kho:</strong> Lấy hàng ra khỏi kho (tồn kho giảm)</li>
+                        <li><i class="fas fa-check text-success"></i> Số lượng xuất không được vượt quá tồn kho hiện tại</li>
+                        <li><i class="fas fa-check text-success"></i> Hệ thống sẽ tự động cập nhật tồn kho sau khi lưu</li>
+                        <li><i class="fas fa-check text-success"></i> Mọi giao dịch đều được ghi lại trong lịch sử</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleSoLuongInput() {
+        const loaiGiaoDich = document.querySelector('select[name="loaiGiaoDich"]').value;
+        const soLuongInput = document.getElementById('soLuongInput');
+        const soLuongHint = document.getElementById('soLuongHint');
+        const xuatKhoWarning = document.getElementById('xuatKhoWarning');
+        const tonKhoHienTai = @tonKhoHienTai;
+
+        if (loaiGiaoDich === 'Xuất kho') {
+            soLuongInput.max = tonKhoHienTai;
+            soLuongHint.textContent = `Số lượng xuất tối đa: ${tonKhoHienTai}`;
+            xuatKhoWarning.style.display = 'block';
+        } else if (loaiGiaoDich === 'Nhập kho') {
+            soLuongInput.removeAttribute('max');
+            soLuongHint.textContent = 'Nhập số lượng cần nhập vào kho';
+            xuatKhoWarning.style.display = 'none';
+        } else {
+            soLuongInput.removeAttribute('max');
+            soLuongHint.textContent = 'Nhập số lượng cần nhập hoặc xuất';
+            xuatKhoWarning.style.display = 'none';
+        }
+    }
+</script>
+

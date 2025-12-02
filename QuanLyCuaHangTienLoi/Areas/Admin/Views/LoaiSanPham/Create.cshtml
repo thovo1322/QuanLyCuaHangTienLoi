@@ -1,0 +1,22 @@
+﻿@model QuanLyCuaHangTienLoi.Models.LoaiSanPham
+
+<h3>Thêm loại sản phẩm mới</h3>
+
+<form asp-controller="LoaiSanPham" method="post" asp-action="Create">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label>Tên loại</label>
+        <input asp-for="TenLoai" class="form-control" required />
+
+        <span asp-validation-for="TenLoai" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label>Danh mục</label>
+        <select asp-for="MaDanhMuc" asp-items="ViewBag.MaDanhMuc" class="form-control" required>
+            <option value="">-- Chọn danh mục --</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Thêm mới</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>

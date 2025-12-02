@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuanLyCuaHangTienLoi.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace QuanLyCuaHangTienLoi.Areas.Admin.Controllers
 {
@@ -17,12 +18,12 @@ namespace QuanLyCuaHangTienLoi.Areas.Admin.Controllers
         // GET: Admin/DonHang
         public async Task<IActionResult> Index()
         {
-            var orders = await _context.DonHangs
+            var donHangs = await _context.DonHangs
                 .Include(d => d.FkMaNvNavigation)
                 .OrderByDescending(d => d.NgayTao)
                 .ToListAsync();
 
-            return View(orders);
+            return View(donHangs);
         }
 
         // GET: Admin/DonHang/Details/5
@@ -139,4 +140,5 @@ namespace QuanLyCuaHangTienLoi.Areas.Admin.Controllers
             return _context.DonHangs.Any(e => e.MaDonHang == id);
         }
     }
+
 }

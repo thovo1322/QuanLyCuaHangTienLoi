@@ -1,0 +1,85 @@
+@model QuanLyCuaHangTienLoi.Models.NhanVien
+@{
+    ViewData["Title"] = "Xóa nhân viên";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">⚠️ Xóa nhân viên</h1>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4 border-danger">
+                <div class="card-header py-3 bg-danger text-white">
+                    <h6 class="m-0 font-weight-bold">Xác nhận xóa nhân viên</h6>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i> <strong>Cảnh báo:</strong> Bạn có chắc chắn muốn xóa nhân viên này? Hành động này không thể hoàn tác!
+                    </div>
+
+                    <dl class="row">
+                        <dt class="col-sm-4">Mã nhân viên:</dt>
+                        <dd class="col-sm-8">@Model.MaNv</dd>
+
+                        <dt class="col-sm-4">Tên nhân viên:</dt>
+                        <dd class="col-sm-8">@Model.TenNv</dd>
+
+                        <dt class="col-sm-4">Chức vụ:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge badge-info">@Model.IdChucvuNavigation?.TenVaiTro</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Lương cơ bản:</dt>
+                        <dd class="col-sm-8">@Model.Luongcoban?.ToString("N0") VNĐ</dd>
+
+                        <dt class="col-sm-4">Phụ cấp:</dt>
+                        <dd class="col-sm-8">@Model.Phucap?.ToString("N0") VNĐ</dd>
+                    </dl>
+
+                    <form asp-action="Delete" method="post">
+                        <input type="hidden" asp-for="MaNv" />
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Xác nhận xóa
+                            </button>
+                            <a asp-action="Details" asp-route-id="@Model.MaNv" class="btn btn-info">
+                                <i class="fas fa-eye"></i> Xem chi tiết
+                            </a>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Hủy
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">⚠️ Lưu ý</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-exclamation-circle text-danger"></i> Xóa nhân viên sẽ xóa vĩnh viễn tất cả thông tin liên quan</li>
+                        <li><i class="fas fa-exclamation-circle text-danger"></i> Hành động này không thể hoàn tác</li>
+                        <li><i class="fas fa-info-circle text-info"></i> Nếu nhân viên đã có dữ liệu liên quan, có thể không thể xóa</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

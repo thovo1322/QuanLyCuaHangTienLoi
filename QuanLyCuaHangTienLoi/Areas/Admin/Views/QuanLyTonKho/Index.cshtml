@@ -1,0 +1,189 @@
+@model List<QuanLyCuaHangTienLoi.Areas.Admin.Controllers.TonKhoViewModel>
+@{
+    ViewData["Title"] = "Quản lý tồn kho";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">📦 Quản lý tồn kho</h1>
+        <div>
+            <a asp-area="Admin" asp-controller="BangDieuKhien" asp-action="Index" class="btn btn-secondary btn-sm me-2">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+            <a asp-action="CapNhatTonKho" class="btn btn-success btn-sm">
+                <i class="fas fa-edit"></i> Cập nhật/Xuất kho
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Thống kê -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Tổng số sản phẩm
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TongSoSanPham</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-box fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Sản phẩm cần cảnh báo
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.SoSanPhamCanhBao</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Form tìm kiếm và lọc -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-search"></i> Tìm kiếm và lọc
+            </h6>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row">
+                <div class="col-md-4 mb-2">
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="Tìm theo tên hoặc mã sản phẩm..." 
+                           value="@ViewBag.Search" />
+                </div>
+                <div class="col-md-3 mb-2">
+                    <select name="minStock" class="form-control">
+                        <option value="">Tất cả sản phẩm</option>
+                        <option value="10" selected="@(ViewBag.MinStock == 10)">Sắp hết hàng (< 10)</option>
+                        <option value="50" selected="@(ViewBag.MinStock == 50)">Hàng ít (< 50)</option>
+                    </select>
+                </div>
+                <div class="col-md-2 mb-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search"></i> Tìm
+                    </button>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a asp-action="Index" class="btn btn-secondary w-100">
+                        <i class="fas fa-redo"></i> Làm mới
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bảng danh sách tồn kho -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Danh sách hàng tồn kho</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Mã SP</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Mã vạch</th>
+                            <th>Danh mục</th>
+                            <th>Loại SP</th>
+                            <th>Số lượng tồn</th>
+                            <th>Đơn vị</th>
+                            <th>Giá vốn</th>
+                            <th>Giá bán</th>
+                            <th>Ngày cập nhật</th>
+                            <th>Cảnh báo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr class="@(!string.IsNullOrEmpty(item.CanhBao) ? $"table-{item.MauCanhBao}" : "")">
+                                    <td>@item.MaSanPham</td>
+                                    <td>@item.TenSanPham</td>
+                                    <td>@(item.MaVach ?? "-")</td>
+                                    <td>@item.DanhMuc</td>
+                                    <td>@item.LoaiSanPham</td>
+                                    <td>
+                                        <strong class="@(item.SoLuongTon < 10 ? "text-danger" : item.SoLuongTon < 50 ? "text-warning" : "")">
+                                            @item.SoLuongTon
+                                        </strong>
+                                    </td>
+                                    <td>@item.DonVi</td>
+                                    <td>@item.GiaVon.ToString("N0") VNĐ</td>
+                                    <td>@item.GiaBan.ToString("N0") VNĐ</td>
+                                    <td>@(item.NgayCapNhatCuoi?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa có")</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.CanhBao))
+                                        {
+                                            <span class="badge badge-@item.MauCanhBao">⚠️ @item.CanhBao</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-dark">✓ Bình thường</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="11" class="text-center">
+                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                    <div>Không có dữ liệu tồn kho</div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-danger {
+        background-color: #f8d7da !important;
+    }
+    .table-warning {
+        background-color: #fff3cd !important;
+    }
+</style>
+

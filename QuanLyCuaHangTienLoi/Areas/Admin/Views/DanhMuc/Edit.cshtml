@@ -1,0 +1,68 @@
+@model QuanLyCuaHangTienLoi.Models.DanhMuc
+
+@{
+    ViewData["Title"] = "Sửa danh mục";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Sửa danh mục</h1>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-primary text-white">
+                    <h6 class="m-0 font-weight-bold">Chỉnh sửa thông tin danh mục</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        
+                        <input type="hidden" asp-for="MaDanhMuc" />
+                        
+                        <div class="form-group">
+                            <label asp-for="Ten" class="font-weight-bold">Tên danh mục <span class="text-danger">*</span></label>
+                            <input asp-for="Ten" class="form-control" required />
+                            <span asp-validation-for="Ten" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="MoTa" class="font-weight-bold">Mô tả</label>
+                            <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="MoTa" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="TrangThai" class="font-weight-bold">Trạng thái <span class="text-danger">*</span></label>
+                            <select asp-for="TrangThai" class="form-control" required>
+                                <option value="">-- Chọn trạng thái --</option>
+                                <option value="Hoạt động">Hoạt động</option>
+                                <option value="Tạm dừng">Tạm dừng</option>
+                                <option value="Ngừng hoạt động">Ngừng hoạt động</option>
+                            </select>
+                            <span asp-validation-for="TrangThai" class="text-danger"></span>
+                        </div>
+
+                        <hr />
+
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save"></i> Cập nhật
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-ban"></i> Hủy
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

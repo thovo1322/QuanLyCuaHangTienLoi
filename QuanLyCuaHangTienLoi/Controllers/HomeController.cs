@@ -15,7 +15,8 @@ namespace QuanLyCuaHangTienLoi.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            // Redirect về trang đăng nhập
+            return RedirectToAction("Index", "DangNhap");
         }
 
         public IActionResult Privacy()

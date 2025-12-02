@@ -1,0 +1,140 @@
+@model QuanLyCuaHangTienLoi.Models.SanPham
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Chi tiết sản phẩm</h1>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin sản phẩm</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            @if (!string.IsNullOrEmpty(Model.HinhAnh))
+                            {
+                                <img src="@Model.HinhAnh" alt="@Model.Ten" class="img-fluid rounded" style="max-width: 300px; max-height: 300px; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="bg-light d-flex align-items-center justify-content-center rounded" style="width: 300px; height: 300px;">
+                                    <span class="text-muted">Chưa có ảnh</span>
+                                </div>
+                            }
+                        </div>
+                        <div class="col-md-8">
+                            <dl class="row">
+                                <dt class="col-sm-4">Mã sản phẩm:</dt>
+                                <dd class="col-sm-8">@Model.MaSanPham</dd>
+
+                                <dt class="col-sm-4">Tên sản phẩm:</dt>
+                                <dd class="col-sm-8"><strong>@Model.Ten</strong></dd>
+
+                                <dt class="col-sm-4">Mã vạch:</dt>
+                                <dd class="col-sm-8">@(Model.MaVach ?? "Chưa có")</dd>
+
+                                <dt class="col-sm-4">Giá bán:</dt>
+                                <dd class="col-sm-8"><strong class="text-primary">@Model.GiaBan.ToString("N0") đ</strong></dd>
+
+                                <dt class="col-sm-4">Giá vốn:</dt>
+                                <dd class="col-sm-8">@Model.GiaVon.ToString("N0") đ</dd>
+
+                                <dt class="col-sm-4">Số lượng:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge @(Model.SoLuong.HasValue && Model.SoLuong.Value > 0 ? "badge-success" : "badge-danger")">
+                                        @(Model.SoLuong ?? 0)
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-4">Trạng thái:</dt>
+                                <dd class="col-sm-8">
+                                    @{
+                                        var displayStatus = Model.TrangThai;
+                                        if (displayStatus != "Còn hàng" && displayStatus != "Hết hàng")
+                                        {
+                                            displayStatus = (Model.SoLuong.HasValue && Model.SoLuong.Value > 0) ? "Còn hàng" : "Hết hàng";
+                                        }
+                                        else if (!Model.SoLuong.HasValue || Model.SoLuong.Value <= 0)
+                                        {
+                                            displayStatus = "Hết hàng";
+                                        }
+                                        else if (Model.SoLuong.Value > 0)
+                                        {
+                                            displayStatus = "Còn hàng";
+                                        }
+                                    }
+                                    @if (displayStatus == "Còn hàng")
+                                    {
+                                        <span class="badge badge-success">Còn hàng</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-danger">Hết hàng</span>
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-4">Danh mục:</dt>
+                                <dd class="col-sm-8">@(Model.FkMaDanhMucNavigation?.Ten ?? "Chưa có")</dd>
+
+                                <dt class="col-sm-4">Nhà cung cấp:</dt>
+                                <dd class="col-sm-8">@(Model.MaNccNavigation?.TenNcc ?? "Chưa có")</dd>
+
+                                <dt class="col-sm-4">Ngày tạo:</dt>
+                                <dd class="col-sm-8">@(Model.NgayTao?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa có")</dd>
+
+                                @if (!string.IsNullOrEmpty(Model.MoTa))
+                                {
+                                    <dt class="col-sm-4">Mô tả:</dt>
+                                    <dd class="col-sm-8">@Model.MoTa</dd>
+                                }
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a asp-action="Edit" asp-route-id="@Model.MaSanPham" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Sửa
+                        </a>
+                        <a asp-action="UpdateImage" asp-route-id="@Model.MaSanPham" class="btn btn-info">
+                            <i class="fas fa-image"></i> Cập nhật ảnh
+                        </a>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .badge {
+        padding: 0.35em 0.65em;
+        font-size: 0.875em;
+        font-weight: 600;
+        border-radius: 0.25rem;
+    }
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+    .badge-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+    dt {
+        font-weight: 600;
+        color: #495057;
+    }
+    dd {
+        margin-bottom: 0.5rem;
+    }
+</style>
+

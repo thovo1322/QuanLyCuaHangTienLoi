@@ -1,0 +1,131 @@
+@{
+    ViewData["Title"] = "Kiểm kho";
+    var sanPham = ViewBag.SanPham as QuanLyCuaHangTienLoi.Models.SanPham;
+    var tonKhoHienTai = ViewBag.TonKhoHienTai as int? ?? 0;
+    var sanPhams = ViewBag.SanPhams as List<QuanLyCuaHangTienLoi.Models.SanPham> ?? new List<QuanLyCuaHangTienLoi.Models.SanPham>();
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">📋 Kiểm kho</h1>
+        <div>
+            <a asp-area="Admin" asp-controller="BangDieuKhien" asp-action="Index" class="btn btn-secondary btn-sm me-2">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+            <a asp-action="Index" class="btn btn-info btn-sm">
+                <i class="fas fa-list"></i> Danh sách tồn kho
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin kiểm kho</h6>
+                </div>
+                <div class="card-body">
+                    <!-- Chọn sản phẩm -->
+                    <form method="get" asp-action="KiemKho" class="mb-4">
+                        <div class="form-group">
+                            <label>Chọn sản phẩm để kiểm kho:</label>
+                            <select name="maSanPham" class="form-control" onchange="this.form.submit()">
+                                <option value="">-- Chọn sản phẩm --</option>
+                                @foreach (var sp in sanPhams)
+                                {
+                                    <option value="@sp.MaSanPham" selected="@(sanPham?.MaSanPham == sp.MaSanPham)">
+                                        @sp.MaSanPham - @sp.Ten
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    </form>
+
+                    @if (sanPham != null)
+                    {
+                        <form method="post" asp-action="KiemKho">
+                            <input type="hidden" name="maSanPham" value="@sanPham.MaSanPham" />
+                            
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-info-circle"></i> Thông tin sản phẩm</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>Mã sản phẩm:</strong> @sanPham.MaSanPham<br>
+                                        <strong>Tên sản phẩm:</strong> @sanPham.Ten<br>
+                                        <strong>Mã vạch:</strong> @(sanPham.MaVach ?? "-")
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Danh mục:</strong> @(sanPham.FkMaDanhMucNavigation?.Ten ?? "-")<br>
+                                        <strong>Loại sản phẩm:</strong> @(sanPham.MaLoaiConNavigation?.TenLoai ?? "-")<br>
+                                        <strong>Giá bán:</strong> @sanPham.GiaBan.ToString("N0") VNĐ
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">
+                                    <strong>Số lượng tồn kho hiện tại (theo hệ thống):</strong>
+                                </label>
+                                <input type="number" class="form-control form-control-lg text-center" 
+                                       value="@tonKhoHienTai" readonly 
+                                       style="font-size: 24px; font-weight: bold; background-color: #f8f9fa;" />
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">
+                                    <strong>Số lượng thực tế (sau khi kiểm kho):</strong> <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" name="soLuongThucTe" class="form-control form-control-lg text-center" 
+                                       value="@tonKhoHienTai" min="0" required
+                                       style="font-size: 24px; font-weight: bold;" />
+                                <small class="form-text text-muted">
+                                    Nhập số lượng thực tế sau khi đếm hàng trong kho
+                                </small>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label class="form-label">Lý do chênh lệch (nếu có):</label>
+                                <textarea name="lyDo" class="form-control" rows="3" 
+                                          placeholder="Ví dụ: Hàng hỏng, mất mát, sai sót trong nhập kho..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save"></i> Lưu kết quả kiểm kho
+                                </button>
+                                <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                    <i class="fas fa-times"></i> Hủy
+                                </a>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Vui lòng chọn sản phẩm để kiểm kho
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">💡 Hướng dẫn</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> Chọn sản phẩm cần kiểm kho</li>
+                        <li><i class="fas fa-check text-success"></i> Xem số lượng tồn kho hiện tại</li>
+                        <li><i class="fas fa-check text-success"></i> Đếm số lượng thực tế trong kho</li>
+                        <li><i class="fas fa-check text-success"></i> Nhập số lượng thực tế vào hệ thống</li>
+                        <li><i class="fas fa-check text-success"></i> Ghi chú lý do nếu có chênh lệch</li>
+                        <li><i class="fas fa-check text-success"></i> Hệ thống sẽ tự động cập nhật tồn kho</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

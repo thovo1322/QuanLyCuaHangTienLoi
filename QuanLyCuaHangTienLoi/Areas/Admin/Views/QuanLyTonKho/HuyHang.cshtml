@@ -1,0 +1,291 @@
+@{
+    ViewData["Title"] = "Hủy hàng";
+    var danhSachHuyHang = ViewBag.DanhSachHuyHang as List<QuanLyCuaHangTienLoi.Models.GiaoDichKho> ?? new List<QuanLyCuaHangTienLoi.Models.GiaoDichKho>();
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">🗑️ Hủy hàng</h1>
+        <div>
+            <a asp-area="Admin" asp-controller="BangDieuKhien" asp-action="Index" class="btn btn-secondary btn-sm me-2">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+            <a asp-action="CapNhatTonKho" class="btn btn-info btn-sm">
+                <i class="fas fa-edit"></i> Cập nhật tồn kho
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quét mã vạch để hủy hàng</h6>
+                </div>
+                <div class="card-body">
+                    <form id="barcodeForm" class="mb-4">
+                        <div class="form-group mb-3">
+                            <label class="form-label">
+                                <strong>Mã vạch (Barcode):</strong> <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" id="barcodeInput" 
+                                   class="form-control form-control-lg text-center" 
+                                   placeholder=""
+                                   maxlength="13"
+                                   style="font-size: 24px; font-weight: bold; letter-spacing: 2px;"
+                                   autofocus />
+                            <small class="form-text text-muted">
+                                Hỗ trợ mã vạch 6, 8 hoặc 13 số
+                            </small>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-search"></i> Tìm sản phẩm
+                        </button>
+                    </form>
+
+                    <!-- Thông tin sản phẩm -->
+                    <div id="productInfo" style="display: none;">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle"></i> Thông tin sản phẩm</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <strong>Mã sản phẩm:</strong> <span id="productId"></span><br>
+                                    <strong>Tên sản phẩm:</strong> <span id="productName" class="font-weight-bold"></span><br>
+                                    <strong>Mã vạch:</strong> <span id="productBarcode"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Danh mục:</strong> <span id="productCategory"></span><br>
+                                    <strong>Loại sản phẩm:</strong> <span id="productType"></span><br>
+                                    <strong>Tồn kho hiện tại:</strong> <span id="productStock" class="text-primary font-weight-bold"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form nhập số lượng hủy -->
+                        <form id="huyHangForm" method="post" asp-action="HuyHang">
+                            <input type="hidden" name="maSanPham" id="hiddenMaSanPham" />
+                            
+                            <div class="form-group mb-3">
+                                <label class="form-label">
+                                    <strong>Số lượng hủy:</strong> <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" name="soLuongHuy" id="soLuongHuyInput" 
+                                       class="form-control form-control-lg text-center" 
+                                       min="1" required
+                                       style="font-size: 24px; font-weight: bold;" />
+                                <small class="form-text text-muted" id="soLuongHint">
+                                    Nhập số lượng cần hủy
+                                </small>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i> 
+                                <strong>Lưu ý:</strong> Số lượng hủy không được vượt quá số lượng tồn kho hiện tại
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-danger btn-lg w-100">
+                                    <i class="fas fa-trash-alt"></i> Xác nhận hủy hàng
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-lg w-100 mt-2" onclick="resetForm()">
+                                    <i class="fas fa-redo"></i> Nhập lại
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Thông báo lỗi -->
+                    <div id="errorMessage" class="alert alert-danger" style="display: none;">
+                        <i class="fas fa-exclamation-circle"></i> <span id="errorText"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danh sách sản phẩm đã hủy -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-danger">📋 Danh sách sản phẩm đã hủy</h6>
+                </div>
+                <div class="card-body">
+                    @if (danhSachHuyHang.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Ngày giờ</th>
+                                        <th>Mã SP</th>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Số lượng hủy</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in danhSachHuyHang)
+                                    {
+                                        <tr>
+                                            <td>@(item.NgayTao?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                                            <td>@(item.FkMaSanPhamNavigation?.MaSanPham.ToString() ?? "-")</td>
+                                            <td>
+                                                <strong>@(item.FkMaSanPhamNavigation?.Ten ?? "Không xác định")</strong>
+                                            </td>
+                                            <td>
+                                                <span class="text-dark">@item.SoLuong</span>
+                                            </td>
+                                            <td>
+                                                <span class="text-dark">@(item.TrangThai ?? "-")</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>Chưa có sản phẩm nào được hủy</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @* <div class="col-lg-4"> *@
+        @*     <div class="card shadow mb-4"> *@
+        @*         <div class="card-header py-3"> *@
+        @*             <h6 class="m-0 font-weight-bold text-info">💡 Hướng dẫn</h6> *@
+        @*         </div> *@
+        @*         <div class="card-body"> *@
+        @*             <ul class="list-unstyled"> *@
+        @*                 <li><i class="fas fa-check text-success"></i> Nhập mã vạch 6, 8 hoặc 13 số</li> *@
+        @*                 <li><i class="fas fa-check text-success"></i> Hệ thống sẽ tự động tìm sản phẩm</li> *@
+        @*                 <li><i class="fas fa-check text-success"></i> Nhập số lượng cần hủy</li> *@
+        @*                 <li><i class="fas fa-check text-success"></i> Số lượng hủy không được vượt quá tồn kho</li> *@
+        @*                 <li><i class="fas fa-check text-success"></i> Hệ thống sẽ tự động cập nhật tồn kho</li> *@
+        @*                 <li><i class="fas fa-check text-success"></i> Mọi giao dịch đều được ghi lại</li> *@
+        @*             </ul> *@
+        @*         </div> *@
+        @*     </div> *@
+        @* </div> *@
+    </div>
+</div>
+
+<script>
+    let currentStock = 0;
+
+    // Xử lý form tìm sản phẩm
+    document.getElementById('barcodeForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const barcode = document.getElementById('barcodeInput').value.trim();
+        const errorDiv = document.getElementById('errorMessage');
+        const productInfo = document.getElementById('productInfo');
+        
+        // Ẩn thông báo lỗi và thông tin sản phẩm cũ
+        errorDiv.style.display = 'none';
+        productInfo.style.display = 'none';
+        
+        if (!barcode) {
+            showError('Vui lòng nhập mã vạch');
+            return;
+        }
+        
+        // Kiểm tra độ dài barcode
+        if (barcode.length !== 6 && barcode.length !== 8 && barcode.length !== 13) {
+            showError('Mã vạch phải là 6, 8 hoặc 13 số');
+            return;
+        }
+        
+        // Kiểm tra chỉ chứa số
+        if (!/^\d+$/.test(barcode)) {
+            showError('Mã vạch chỉ được chứa số');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`@Url.Action("TimSanPhamTheoBarcode", "QuanLyTonKho")?barcode=${encodeURIComponent(barcode)}`);
+            const data = await response.json();
+            
+            if (data.success) {
+                // Hiển thị thông tin sản phẩm
+                document.getElementById('productId').textContent = data.sanPham.maSanPham;
+                document.getElementById('productName').textContent = data.sanPham.ten;
+                document.getElementById('productBarcode').textContent = data.sanPham.maVach || '-';
+                document.getElementById('productCategory').textContent = data.sanPham.danhMuc || '-';
+                document.getElementById('productType').textContent = data.sanPham.loaiSanPham || '-';
+                document.getElementById('productStock').textContent = data.sanPham.soLuongTon;
+                
+                document.getElementById('hiddenMaSanPham').value = data.sanPham.maSanPham;
+                document.getElementById('soLuongHuyInput').max = data.sanPham.soLuongTon;
+                document.getElementById('soLuongHuyInput').value = '';
+                
+                currentStock = data.sanPham.soLuongTon;
+                updateSoLuongHint();
+                
+                productInfo.style.display = 'block';
+                document.getElementById('soLuongHuyInput').focus();
+            } else {
+                showError(data.message || 'Không tìm thấy sản phẩm');
+            }
+        } catch (error) {
+            showError('Có lỗi xảy ra khi tìm kiếm sản phẩm');
+            console.error(error);
+        }
+    });
+    
+    // Cập nhật hint số lượng
+    function updateSoLuongHint() {
+        const hint = document.getElementById('soLuongHint');
+        hint.textContent = `Số lượng hủy tối đa: ${currentStock}`;
+    }
+    
+    // Hiển thị lỗi
+    function showError(message) {
+        const errorDiv = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        errorText.textContent = message;
+        errorDiv.style.display = 'block';
+    }
+    
+    // Reset form
+    function resetForm() {
+        document.getElementById('barcodeInput').value = '';
+        document.getElementById('productInfo').style.display = 'none';
+        document.getElementById('errorMessage').style.display = 'none';
+        document.getElementById('barcodeInput').focus();
+    }
+    
+    // Xử lý khi nhập số lượng hủy
+    document.getElementById('soLuongHuyInput')?.addEventListener('input', function() {
+        const soLuong = parseInt(this.value) || 0;
+        if (soLuong > currentStock) {
+            this.setCustomValidity(`Số lượng hủy không được vượt quá ${currentStock}`);
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Chỉ cho phép nhập số vào barcode
+    document.getElementById('barcodeInput').addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '');
+    });
+</script>
+

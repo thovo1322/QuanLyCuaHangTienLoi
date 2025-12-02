@@ -19,7 +19,7 @@
                     <h6 class="m-0 font-weight-bold text-primary">Thông tin sản phẩm</h6>
                 </div>
                 <div class="card-body">
-                    <form asp-controller="SanPham" method="post" asp-action="Create">
+                    <form asp-controller="SanPham" method="post" asp-action="Create" enctype="multipart/form-data">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                         <div class="form-group"> 
                              <label>Tên sản phẩm</label> 
@@ -33,19 +33,33 @@
 
                          <div class="form-group"> 
                              <label>Giá bán</label> 
-                             <input asp-for="GiaBan" class="form-control" /> 
+                             <input type="text" 
+                                    id="GiaBan" 
+                                    name="GiaBan" 
+                                    class="form-control price-input" 
+                                    placeholder="Nhập giá bán (VD: 29,000)" />
+                             <span asp-validation-for="GiaBan" class="text-danger"></span>
                         </div> 
 
                          <div class="form-group"> 
                              <label>Giá vốn</label> 
-                             <input asp-for="GiaVon" class="form-control" />
+                             <input type="text" 
+                                    id="GiaVon" 
+                                    name="GiaVon" 
+                                    class="form-control price-input" 
+                                    placeholder="Nhập giá vốn (VD: 25,000)" />
+                             <span asp-validation-for="GiaVon" class="text-danger"></span>
                          </div> 
 
                          <div class="form-group"> 
                              <label>Số lượng</label> 
                              <input asp-for="SoLuong" class="form-control" /> 
-                         </div> 
-
+                         </div>
+                        <div class="form-group mb-3">
+                            <label class="control-label" for="files">Chọn hình ảnh</label>
+                            <input type="file" name="files" class="form-control" accept="image/*" multiple />
+                            @* <small class="form-text text-muted">Có thể chọn nhiều ảnh cùng lúc</small> *@
+                        </div>
      @* <div class="form-group">   *@
      @*     <label>Danh mục</label>  *@
      @*     <select asp-for="FkMaDanhMuc" asp-items="@(new SelectList(ViewBag.DanhMucs, "MaDanhMuc", "Ten"))" class="form-control"></select>  *@
@@ -170,4 +184,52 @@
 @* </html> *@
  @section Scripts { 
      @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+     
+     <script>
+        // Format số khi nhập (tự động thêm dấu phẩy real-time)
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.price-input').forEach(input => {
+                // Format số ngay khi đang nhập
+                input.addEventListener('input', function(e) {
+                    // Lấy giá trị hiện tại và bỏ tất cả ký tự không phải số
+                    let rawValue = this.value.replace(/[^\d]/g, '');
+                    
+                    // Nếu có giá trị, format với dấu phẩy
+                    if (rawValue && rawValue.length > 0) {
+                        // Parse thành số
+                        let numValue = Number(rawValue);
+                        
+                        // Kiểm tra nếu số hợp lệ
+                        if (!isNaN(numValue) && numValue >= 0) {
+                            // Format số với dấu phẩy theo định dạng Việt Nam
+                            let formatted = numValue.toLocaleString('vi-VN');
+                            this.value = formatted;
+                        } else {
+                            this.value = '';
+                        }
+                    } else {
+                        this.value = '';
+                    }
+                });
+
+                // Format khi blur để đảm bảo format đúng
+                input.addEventListener('blur', function() {
+                    let rawValue = this.value.replace(/,/g, '').replace(/\./g, '').trim();
+                    if (rawValue && !isNaN(rawValue)) {
+                        let numValue = Number(rawValue);
+                        if (numValue >= 0 && !isNaN(numValue)) {
+                            this.value = numValue.toLocaleString('vi-VN');
+                        }
+                    }
+                });
+            });
+
+            // Trước khi submit, bỏ dấu phẩy để gửi số thuần
+            document.querySelector('form').addEventListener('submit', function(e) {
+                document.querySelectorAll('.price-input').forEach(input => {
+                    input.value = input.value.replace(/,/g, '');
+                });
+            });
+        });
+    </script>
  } 

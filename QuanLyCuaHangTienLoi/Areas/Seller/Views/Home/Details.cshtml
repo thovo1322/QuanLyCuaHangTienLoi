@@ -1,0 +1,116 @@
+@model QuanLyCuaHangTienLoi.Models.DonHang
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">📋 Chi tiết đơn hàng #@Model.MaDonHang</h1>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin đơn hàng</h6>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-4">
+                        <dt class="col-sm-4">Mã đơn hàng:</dt>
+                        <dd class="col-sm-8"><strong>#@Model.MaDonHang</strong></dd>
+
+                        <dt class="col-sm-4">Mã hóa đơn:</dt>
+                        <dd class="col-sm-8">@(Model.MaHoaDon ?? "N/A")</dd>
+
+                        <dt class="col-sm-4">Nhân viên:</dt>
+                        <dd class="col-sm-8">@(Model.FkMaNvNavigation?.HoTen ?? "N/A")</dd>
+
+                        <dt class="col-sm-4">Ngày tạo:</dt>
+                        <dd class="col-sm-8">@(Model.NgayTao?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</dd>
+
+                        <dt class="col-sm-4">Phương thức thanh toán:</dt>
+                        <dd class="col-sm-8">
+                            <span class="text-dark">@(Model.PhuongThucThanhToan ?? "N/A")</span>
+                        </dd>
+                    </dl>
+
+                    <hr class="my-4" />
+
+                    <h6 class="font-weight-bold mb-3">Chi tiết sản phẩm</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Giảm giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ChiTietDonHangs != null && Model.ChiTietDonHangs.Any())
+                                {
+                                    int stt = 1;
+                                    @foreach (var item in Model.ChiTietDonHangs)
+                                    {
+                                        var thanhTien = (item.GiaBanLucDo * item.SoLuong) - item.GiamGia;
+                                        <tr>
+                                            <td>@stt</td>
+                                            <td>@(item.FkMaSanPhamNavigation?.Ten ?? "N/A")</td>
+                                            <td>@item.SoLuong</td>
+                                            <td>@item.GiaBanLucDo.ToString("N0") VNĐ</td>
+                                            <td>@item.GiamGia.ToString("N0") VNĐ</td>
+                                            <td><strong>@thanhTien.ToString("N0") VNĐ</strong></td>
+                                        </tr>
+                                        stt++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">Không có chi tiết</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            
+                        </table>
+                        <button type="button" name="myButton" value="someValue">In hóa đơn</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Tổng cộng</h6>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-6">Tổng tiền trước giảm:</dt>
+                        <dd class="col-sm-6 text-right">@Model.TongTienTruocGiam.ToString("N0") VNĐ</dd>
+
+                        <dt class="col-sm-6">Giảm giá:</dt>
+                        <dd class="col-sm-6 text-right text-danger">-@Model.TongTienGiamGia.ToString("N0") VNĐ</dd>
+
+                        <hr/>
+
+                        <dt class="col-sm-6"><strong>Thành tiền:</strong></dt>
+                        <dd class="col-sm-6 text-right">
+                            <strong class="text-primary" style="font-size: 1.2em;">
+                                @Model.TongTienSauGiam.ToString("N0") VNĐ
+                            </strong>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

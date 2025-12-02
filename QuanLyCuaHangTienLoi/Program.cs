@@ -37,11 +37,11 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "areas",
-    pattern: "{area:exists}/{controller=BangDieuKhien}/{action=Index}/{id?}");
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=DangNhap}/{action=Index}/{id?}");
 var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<QlchtlContext>();
 SeedData.SeedingData(context);
 

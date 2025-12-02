@@ -1,0 +1,76 @@
+@model QuanLyCuaHangTienLoi.Models.NhanVien
+@{
+    ViewData["Title"] = "Chi tiết nhân viên";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">👤 Chi tiết nhân viên</h1>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.MaNv" class="btn btn-warning btn-sm">
+                <i class="fas fa-edit"></i> Sửa
+            </a>
+            <a asp-action="Index" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin nhân viên</h6>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Mã nhân viên:</dt>
+                        <dd class="col-sm-8">@Model.MaNv</dd>
+
+                        <dt class="col-sm-4">Tên nhân viên:</dt>
+                        <dd class="col-sm-8">@Model.TenNv</dd>
+
+                        <dt class="col-sm-4">Chức vụ:</dt>
+                        <dd class="col-sm-8">
+                            <span class="text-dark">@Model.IdChucvuNavigation?.TenVaiTro</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Lương cơ bản:</dt>
+                        <dd class="col-sm-8">@Model.Luongcoban?.ToString("N0") VNĐ</dd>
+
+                        <dt class="col-sm-4">Phụ cấp:</dt>
+                        <dd class="col-sm-8">@Model.Phucap?.ToString("N0") VNĐ</dd>
+
+                        <dt class="col-sm-4">Ngày vào làm:</dt>
+                        <dd class="col-sm-8">@(Model.Ngayvaolam?.ToString("dd/MM/yyyy") ?? "Chưa có")</dd>
+
+                        <dt class="col-sm-4">Ngày nghỉ việc:</dt>
+                        <dd class="col-sm-8">@(Model.Ngaynghiviec?.ToString("dd/MM/yyyy") ?? "Đang làm việc")</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">Thao tác</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-action="Edit" asp-route-id="@Model.MaNv" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Sửa thông tin
+                        </a>
+                        <a asp-action="ResetPassword" asp-route-id="@Model.MaNv" class="btn btn-secondary">
+                            <i class="fas fa-key"></i> Reset mật khẩu
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.MaNv" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Xóa nhân viên
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

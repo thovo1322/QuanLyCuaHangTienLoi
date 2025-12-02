@@ -36,6 +36,8 @@ public partial class SanPham
 
     public int? MaLoaiCon { get; set; }
 
+    public string? HinhAnh { get; set; }
+
     public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
 
     public virtual ICollection<ChiTietQuetHht> ChiTietQuetHhts { get; set; } = new List<ChiTietQuetHht>();

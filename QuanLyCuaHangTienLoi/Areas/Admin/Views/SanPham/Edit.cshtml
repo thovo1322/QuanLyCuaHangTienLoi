@@ -17,10 +17,26 @@
             <div class="card shadow mb-4">
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">Thông tin sản phẩm</h6>
-                    
                 </div>
                 <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
                     <form asp-controller="SanPham" asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="MaSanPham" />
+                        <input type="hidden" asp-for="NgayTao" />
+                        <input type="hidden" asp-for="FkMaNguoiTao" />
                        
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
@@ -36,17 +52,51 @@
 
                         <div class="form-group">
                             <label>Giá bán</label>
-                            <input asp-for="GiaBan" class="form-control" />
+                            <input type="text" 
+                                   id="GiaBan" 
+                                   name="GiaBan" 
+                                   class="form-control price-input" 
+                                   value="@((Model.GiaBan > 0) ? Model.GiaBan.ToString("N0") : "")" 
+                                   placeholder="Nhập giá bán (VD: 29,000)" />
+                            <span asp-validation-for="GiaBan" class="text-danger"></span>
                         </div>
 
                         <div class="form-group">
                             <label>Giá vốn</label>
-                            <input asp-for="GiaVon" class="form-control" />
+                            <input type="text" 
+                                   id="GiaVon" 
+                                   name="GiaVon" 
+                                   class="form-control price-input" 
+                                   value="@((Model.GiaVon > 0) ? Model.GiaVon.ToString("N0") : "")" 
+                                   placeholder="Nhập giá vốn (VD: 25,000)" />
+                            <span asp-validation-for="GiaVon" class="text-danger"></span>
                         </div>
 
                         <div class="form-group">
                             <label>Số lượng</label>
                             <input asp-for="SoLuong" class="form-control" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Trạng thái <span class="text-danger">*</span></label>
+                            <select asp-for="TrangThai" class="form-control" required>
+                                @if (Model.TrangThai == "Còn hàng" || string.IsNullOrEmpty(Model.TrangThai))
+                                {
+                                    <option value="Còn hàng" selected>Còn hàng</option>
+                                    <option value="Hết hàng">Hết hàng</option>
+                                }
+                                else if (Model.TrangThai == "Hết hàng")
+                                {
+                                    <option value="Còn hàng">Còn hàng</option>
+                                    <option value="Hết hàng" selected>Hết hàng</option>
+                                }
+                                else
+                                {
+                                    <option value="Còn hàng" selected>Còn hàng</option>
+                                    <option value="Hết hàng">Hết hàng</option>
+                                }
+                            </select>
+                            <small class="form-text text-muted">Chỉ có 2 trạng thái: Còn hàng hoặc Hết hàng</small>
                         </div>
 
                         @* <div class="form-group">   *@
@@ -91,9 +141,135 @@
                             <textarea asp-for="MoTa" class="form-control"></textarea>
                         </div>
 
+                        <div class="form-group">
+                            <label>Hình ảnh sản phẩm</label>
+                            @if (!string.IsNullOrEmpty(Model.HinhAnh))
+                            {
+                                <div class="mb-2">
+                                    <img src="@Model.HinhAnh" alt="@Model.Ten" class="img-thumbnail" style="max-width: 200px; max-height: 200px; object-fit: cover;" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="mb-2 text-muted">
+                                    <i class="fas fa-image"></i> Chưa có ảnh
+                                </div>
+                            }
+                            <div>
+                                <a asp-action="UpdateImage" asp-route-id="@Model.MaSanPham" class="btn btn-sm btn-info">
+                                    <i class="fas fa-image"></i> @(string.IsNullOrEmpty(Model.HinhAnh) ? "Thêm ảnh" : "Cập nhật ảnh")
+                                </a>
+                            </div>
+                        </div>
+
                         <button type="submit" class="btn btn-primary mt-3">Sửa</button>
+                        
                     </form>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        // Format số khi load trang (đảm bảo giá trị hiển thị đúng format)
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.price-input').forEach(input => {
+                // Lấy giá trị từ input (có thể đã có format hoặc chưa)
+                let rawValue = input.value.replace(/,/g, '').replace(/\./g, '').trim();
+                if (rawValue && !isNaN(rawValue) && rawValue !== '') {
+                    // Format lại với dấu phẩy - dùng Number thay vì parseInt
+                    let numValue = Number(rawValue);
+                    if (numValue > 0 && !isNaN(numValue)) {
+                        input.value = numValue.toLocaleString('vi-VN');
+                    }
+                }
+            });
+        });
+
+        // Format số khi nhập (tự động thêm dấu phẩy real-time)
+        document.querySelectorAll('.price-input').forEach(input => {
+            // Format số ngay khi đang nhập
+            input.addEventListener('input', function(e) {
+                // Lấy giá trị hiện tại và bỏ tất cả ký tự không phải số
+                let rawValue = this.value.replace(/[^\d]/g, '');
+                
+                // Debug: log để kiểm tra
+                console.log('Raw value:', rawValue);
+                
+                // Nếu có giá trị, format với dấu phẩy
+                if (rawValue && rawValue.length > 0) {
+                    // Parse thành số - dùng Number để tránh mất số lớn
+                    let numValue = Number(rawValue);
+                    
+                    console.log('Number value:', numValue);
+                    
+                    // Kiểm tra nếu số hợp lệ
+                    if (!isNaN(numValue) && numValue >= 0) {
+                        // Format số với dấu phẩy theo định dạng Việt Nam
+                        let formatted = numValue.toLocaleString('vi-VN');
+                        
+                        console.log('Formatted:', formatted);
+                        
+                        // Lưu vị trí con trỏ trước khi format
+                        let cursorPosition = this.selectionStart;
+                        let oldValue = this.value;
+                        
+                        // Đếm số ký tự số từ đầu đến vị trí con trỏ
+                        let digitsBeforeCursor = 0;
+                        for (let i = 0; i < cursorPosition && i < oldValue.length; i++) {
+                            if (oldValue[i] >= '0' && oldValue[i] <= '9') {
+                                digitsBeforeCursor++;
+                            }
+                        }
+                        
+                        // Cập nhật giá trị
+                        this.value = formatted;
+                        
+                        // Tìm vị trí mới trong chuỗi đã format
+                        let newCursorPosition = 0;
+                        let digitCount = 0;
+                        for (let i = 0; i < formatted.length; i++) {
+                            if (formatted[i] >= '0' && formatted[i] <= '9') {
+                                digitCount++;
+                                if (digitCount > digitsBeforeCursor) {
+                                    newCursorPosition = i;
+                                    break;
+                                }
+                            }
+                            newCursorPosition = i + 1;
+                        }
+                        
+                        // Đảm bảo con trỏ không vượt quá độ dài chuỗi
+                        newCursorPosition = Math.min(newCursorPosition, formatted.length);
+                        
+                        // Đặt lại vị trí con trỏ
+                        setTimeout(() => {
+                            this.setSelectionRange(newCursorPosition, newCursorPosition);
+                        }, 0);
+                    } else {
+                        this.value = '';
+                    }
+                } else {
+                    this.value = '';
+                }
+            });
+
+            // Format khi blur để đảm bảo format đúng
+            input.addEventListener('blur', function() {
+                let rawValue = this.value.replace(/,/g, '').replace(/\./g, '').trim();
+                if (rawValue && !isNaN(rawValue)) {
+                    let numValue = Number(rawValue);
+                    if (numValue >= 0 && !isNaN(numValue)) {
+                        this.value = numValue.toLocaleString('vi-VN');
+                    }
+                }
+            });
+        });
+
+        // Trước khi submit, bỏ dấu phẩy để gửi số thuần
+        document.querySelector('form').addEventListener('submit', function(e) {
+            document.querySelectorAll('.price-input').forEach(input => {
+                input.value = input.value.replace(/,/g, '');
+            });
+        });
+    </script>

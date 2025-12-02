@@ -1,20 +1,89 @@
 ﻿@model IEnumerable<QuanLyCuaHangTienLoi.Models.NhaCungCap>
 
-<h2>Quản lý Nhà Cung Cấp</h2>
+@{
+    ViewData["Title"] = "Quản lý nhà cung cấp";
+}
 
-<a asp-action="Create" class="btn btn-success mt-3">+ Thêm Nhà Cung Cấp</a>
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">🏢 Quản lý nhà cung cấp</h1>
+        <div>
+            <a asp-area="Admin" asp-controller="BangDieuKhien" asp-action="Index" class="btn btn-secondary btn-sm me-2">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+            <a asp-action="Create" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus fa-sm text-white-50"></i> Thêm nhà cung cấp
+            </a>
+        </div>
+    </div>
 
-<table class="table table-striped mt-3">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Form tìm kiếm -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-search"></i> Tìm kiếm nhà cung cấp
+            </h6>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="form-inline">
+                <div class="form-group mb-2 mr-2">
+                    <input type="text" 
+                           name="search" 
+                           class="form-control" 
+                           placeholder="Tìm theo mã hoặc tên nhà cung cấp..." 
+                           value="@ViewBag.Search" 
+                           style="min-width: 300px;" />
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+                @if (!string.IsNullOrEmpty(ViewBag.Search?.ToString()))
+                {
+                    <a asp-action="Index" class="btn btn-secondary mb-2 ml-2">
+                        <i class="fas fa-times"></i> Xóa bộ lọc
+                    </a>
+                    <span class="ml-2 text-muted">
+                        <i class="fas fa-info-circle"></i> Tìm thấy @Model.Count() kết quả
+                    </span>
+                }
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Danh sách nhà cung cấp</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" width="100%" cellspacing="0">
     <thead>
         <tr>
             <th>Mã NCC</th>
-            <th>Tên Nhà Cung Cấp</th>
-            <th>Địa Chỉ</th>
-            <th>Số Điện Thoại</th>
+                            <th>Tên nhà cung cấp</th>
+                            <th>Địa chỉ</th>
+                            <th>Số điện thoại</th>
             <th>Email</th>
-            <th>Trạng Thái</th>
-            <th>Ngày Hợp Tác</th>
-            <th></th>
+                            <th>Loại hàng</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày hợp tác</th>
+                            <th>Thao tác</th>
         </tr>
     </thead>
     <tbody>
@@ -25,14 +94,35 @@
                 <td>@ncc.TenNcc</td>
                 <td>@ncc.DiaChi</td>
                 <td>@ncc.SoDienThoai</td>
-                <td>@ncc.Email</td>
-                <td>@ncc.TrangThai</td>
-                <td>@(ncc.NgayHopTac.HasValue ? ncc.NgayHopTac.Value.ToString("dd/MM/yyyy") : "")</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@ncc.MaNcc" class="btn btn-sm btn-warning">Sửa</a>
-                    <a asp-action="Delete" asp-route-id="@ncc.MaNcc" class="btn btn-sm btn-danger">Xóa</a>
+                                <td>@(ncc.Email ?? "-")</td>
+                                <td>@(ncc.LoaiHang ?? "-")</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(ncc.TrangThai))
+                                    {
+                                        <span class="badge badge-info">@ncc.TrangThai</span>
+                                    }
+                                    else
+                                    {
+                                        <span>-</span>
+                                    }
+                                </td>
+                                <td>@(ncc.NgayHopTac?.ToString("dd/MM/yyyy") ?? "-")</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Edit" asp-route-id="@ncc.MaNcc" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@ncc.MaNcc" class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Bạn có chắc muốn xóa nhà cung cấp này?')">
+                                            <i class="fas fa-trash"></i> Xóa
+                                        </a>
+                                    </div>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+            </div>
+        </div>
+    </div>
+</div>

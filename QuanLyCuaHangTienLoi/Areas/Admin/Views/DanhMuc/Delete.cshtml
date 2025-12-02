@@ -1,0 +1,124 @@
+@model QuanLyCuaHangTienLoi.Models.DanhMuc
+
+@{
+    ViewData["Title"] = "Xóa danh mục";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Xóa danh mục</h1>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-danger text-white">
+                    <h6 class="m-0 font-weight-bold">Bạn có chắc chắn muốn xóa danh mục này không?</h6>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Cảnh báo:</strong> Nếu danh mục này đang có sản phẩm hoặc loại sản phẩm thì <u>không thể xóa</u>!
+                    </div>
+
+                    <dl class="row">
+                        <dt class="col-sm-3 fw-bold">Tên danh mục</dt>
+                        <dd class="col-sm-9">
+                            <span class="text-danger fs-5">@Model.Ten</span>
+                        </dd>
+
+                        <dt class="col-sm-3">Mô tả</dt>
+                        <dd class="col-sm-9">@(Model.MoTa ?? "Chưa có")</dd>
+
+                        <dt class="col-sm-3">Trạng thái</dt>
+                        <dd class="col-sm-9">
+                            @if (!string.IsNullOrEmpty(Model.TrangThai))
+                            {
+                                <span class="badge badge-info">@Model.TrangThai</span>
+                            }
+                            else
+                            {
+                                <span>Chưa có</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-3">Số loại sản phẩm</dt>
+                        <dd class="col-sm-9">
+                            @{
+                                var soLoaiSanPham = ViewBag.SoLoaiSanPham ?? 0;
+                            }
+                            @if (soLoaiSanPham > 0)
+                            {
+                                <span class="text-danger fw-bold">@soLoaiSanPham loại sản phẩm</span>
+                            }
+                            else
+                            {
+                                <span class="text-success">0 loại sản phẩm</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-3">Số sản phẩm</dt>
+                        <dd class="col-sm-9">
+                            @{
+                                var soSanPham = ViewBag.SoSanPham ?? 0;
+                            }
+                            @if (soSanPham > 0)
+                            {
+                                <span class="text-danger fw-bold">@soSanPham sản phẩm</span>
+                            }
+                            else
+                            {
+                                <span class="text-success">0 sản phẩm</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-3">Có thể xóa?</dt>
+                        <dd class="col-sm-9">
+                            @{
+                                var coRangBuoc = ViewBag.CoRangBuoc ?? false;
+                            }
+                            @if (coRangBuoc)
+                            {
+                                <span class="text-danger fw-bold">Không thể xóa</span>
+                            }
+                            else
+                            {
+                                <span class="text-success fw-bold">Có thể xóa</span>
+                            }
+                        </dd>
+                    </dl>
+
+                    <hr />
+
+                    <form asp-action="Delete" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.MaDanhMuc" />
+
+                        @if (ViewBag.CoRangBuoc == true)
+                        {
+                            <div class="alert alert-danger">
+                                Không thể xóa vì danh mục này đang có sản phẩm hoặc loại sản phẩm sử dụng!
+                            </div>
+                            <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </a>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="fas fa-trash-alt"></i> Có, xóa vĩnh viễn!
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-ban"></i> Hủy, không xóa
+                            </a>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

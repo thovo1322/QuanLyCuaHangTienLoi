@@ -1,0 +1,262 @@
+@model IEnumerable<QuanLyCuaHangTienLoi.Models.SanPham>
+@{
+    ViewData["Title"] = "Kiểm tra sản phẩm";
+    var danhMucs = ViewData["DanhMucs"] as List<QuanLyCuaHangTienLoi.Models.DanhMuc> ?? new List<QuanLyCuaHangTienLoi.Models.DanhMuc>();
+    var loaiSanPhams = ViewData["LoaiSanPhams"] as List<QuanLyCuaHangTienLoi.Models.LoaiSanPham> ?? new List<QuanLyCuaHangTienLoi.Models.LoaiSanPham>();
+    var search = ViewData["Search"] as string ?? "";
+    var maDanhMuc = ViewData["MaDanhMuc"] as int?;
+    var maLoaiCon = ViewData["MaLoaiCon"] as int?;
+    
+    // Tạo dictionary để tra cứu nhanh loại sản phẩm theo MaLoai
+    var loaiSanPhamDict = loaiSanPhams
+        .Where(l => l.TenLoai != null)
+        .ToDictionary(l => l.MaLoai, l => l.TenLoai ?? "");
+    
+    // Lấy dictionary từ ViewData nếu có (đã được controller load sẵn)
+    var loaiSanPhamDictFromViewData = ViewData["LoaiSanPhamDict"] as Dictionary<int, string> ?? new Dictionary<int, string>();
+    
+    // Merge cả hai dictionary
+    foreach (var kvp in loaiSanPhamDictFromViewData)
+    {
+        if (!loaiSanPhamDict.ContainsKey(kvp.Key))
+        {
+            loaiSanPhamDict[kvp.Key] = kvp.Value;
+        }
+    }
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">📦 Kiểm tra sản phẩm</h1>
+        <div>
+            <a asp-area="Seller" asp-controller="Home" asp-action="Index" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <!-- Form tìm kiếm và lọc -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">🔍 Tìm kiếm và lọc</h6>
+        </div>
+        <div class="card-body">
+            <form method="get" asp-action="KiemTraSanPham" class="row g-3">
+                <!-- Tìm kiếm -->
+                <div class="col-md-3">
+                    <label for="search" class="form-label">Tìm kiếm</label>
+                    <input type="text" 
+                           id="search" 
+                           name="search" 
+                           class="form-control" 
+                           placeholder="Tên sản phẩm, mã vạch hoặc loại sản phẩm..." 
+                           value="@search" />
+                </div>
+
+                <!-- Lọc theo danh mục -->
+                <div class="col-md-2">
+                    <label for="maDanhMuc" class="form-label">Danh mục</label>
+                    <select id="maDanhMuc" name="maDanhMuc" class="form-select">
+                        <option value="">-- Tất cả danh mục --</option>
+                        @foreach (var dm in danhMucs)
+                        {
+                            if (maDanhMuc.HasValue && maDanhMuc.Value == dm.MaDanhMuc)
+                            {
+                                <option value="@dm.MaDanhMuc" selected>@dm.Ten</option>
+                            }
+                            else
+                            {
+                                <option value="@dm.MaDanhMuc">@dm.Ten</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Lọc theo loại sản phẩm -->
+                <div class="col-md-2">
+                    <label for="maLoaiCon" class="form-label">Loại sản phẩm</label>
+                    <select id="maLoaiCon" name="maLoaiCon" class="form-select">
+                        <option value="">-- Tất cả loại --</option>
+                        @foreach (var lsp in loaiSanPhams)
+                        {
+                            if (maLoaiCon.HasValue && maLoaiCon.Value == lsp.MaLoai)
+                            {
+                                <option value="@lsp.MaLoai" selected>@lsp.TenLoai</option>
+                            }
+                            else
+                            {
+                                <option value="@lsp.MaLoai">@lsp.TenLoai</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <!-- Nút tìm kiếm -->
+                <div class="col-md-5 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100 me-2">
+                        <i class="fas fa-search"></i> Tìm kiếm
+                    </button>
+                    @if (!string.IsNullOrEmpty(search) || maDanhMuc.HasValue || maLoaiCon.HasValue)
+                    {
+                        <a asp-action="KiemTraSanPham" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i> Xóa lọc
+                        </a>
+                    }
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Kết quả tìm kiếm -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                Danh sách sản phẩm 
+                <span class="badge badge-info">@Model.Count() sản phẩm</span>
+            </h6>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Mã vạch</th>
+                                <th>Danh mục</th>
+                                <th>Loại sản phẩm</th>
+                                <th>Giá bán</th>
+                                <th>Số lượng</th>
+                                <th>Nhà cung cấp</th>
+                                <th>Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var sp in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(sp.HinhAnh))
+                                        {
+                                            <img src="@sp.HinhAnh" 
+                                                 alt="@sp.Ten" 
+                                                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-light d-flex align-items-center justify-content-center" 
+                                                 style="width: 50px; height: 50px; border-radius: 4px;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td><strong>@sp.Ten</strong></td>
+                                    <td>@(sp.MaVach ?? "N/A")</td>
+                                    <td>@sp.FkMaDanhMucNavigation?.Ten</td>
+                                    <td>
+                                        @{
+                                            string tenLoai = "";
+                                            
+                                            // Ưu tiên 1: Lấy từ MaLoaiConNavigation (đã được Include và load)
+                                            if (sp.MaLoaiConNavigation != null && !string.IsNullOrEmpty(sp.MaLoaiConNavigation.TenLoai))
+                                            {
+                                                tenLoai = sp.MaLoaiConNavigation.TenLoai;
+                                            }
+                                            // Ưu tiên 2: Lấy từ MaLoaiCon thông qua dictionary
+                                            else if (sp.MaLoaiCon.HasValue)
+                                            {
+                                                if (loaiSanPhamDict.ContainsKey(sp.MaLoaiCon.Value))
+                                                {
+                                                    tenLoai = loaiSanPhamDict[sp.MaLoaiCon.Value];
+                                                }
+                                            }
+                                            // Ưu tiên 3: Lấy từ MaLoai thông qua dictionary
+                                            else if (sp.MaLoai.HasValue)
+                                            {
+                                                if (loaiSanPhamDict.ContainsKey(sp.MaLoai.Value))
+                                                {
+                                                    tenLoai = loaiSanPhamDict[sp.MaLoai.Value];
+                                                }
+                                            }
+                                        }
+                                        @tenLoai
+                                    </td>
+                                    <td class="text-end">@sp.GiaBan.ToString("N0") đ</td>
+                                    <td class="text-end">
+                                        @if (sp.SoLuong.HasValue)
+                                        {
+                                            if (sp.SoLuong.Value > 0)
+                                            {
+                                                <span class="text-dark">@sp.SoLuong.Value</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge badge-danger">Hết hàng</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td>@sp.MaNccNavigation?.TenNcc</td>
+                                    <td>
+                                        @if (sp.TrangThai == "Còn hàng")
+                                        {
+                                            <span class="badge badge-success">Còn hàng</span>
+                                        }
+                                        else if (sp.TrangThai == "Hết hàng")
+                                        {
+                                            <span class="badge badge-danger">Hết hàng</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-warning">Cần cập nhật</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle"></i> Không tìm thấy sản phẩm nào phù hợp với tiêu chí tìm kiếm.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .badge {
+        padding: 0.35em 0.65em;
+        font-size: 0.875em;
+        font-weight: 600;
+    }
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+    .badge-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+    .badge-info {
+        background-color: #17a2b8;
+        color: white;
+    }
+    .badge-warning {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+</style>
+

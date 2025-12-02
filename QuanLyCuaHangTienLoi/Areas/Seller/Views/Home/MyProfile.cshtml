@@ -1,0 +1,152 @@
+@model QuanLyCuaHangTienLoi.Areas.Seller.Controllers.SellerProfileViewModel
+@{
+    ViewData["Title"] = "Thông tin cá nhân";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">👤 Thông tin cá nhân</h1>
+        <div>
+            <a asp-action="Index" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Thông tin cá nhân -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Thông tin nhân viên</h6>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Mã nhân viên:</dt>
+                        <dd class="col-sm-8"><strong>@Model.MaNv</strong></dd>
+
+                        <dt class="col-sm-4">Tên nhân viên:</dt>
+                        <dd class="col-sm-8">@Model.TenNv</dd>
+
+                        <dt class="col-sm-4">Chức vụ:</dt>
+                        <dd class="col-sm-8">
+                            <span class="text-dark">@Model.ChucVu</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Lương cơ bản:</dt>
+                        <dd class="col-sm-8">@Model.Luongcoban?.ToString("N0") VNĐ</dd>
+
+                        <dt class="col-sm-4">Phụ cấp:</dt>
+                        <dd class="col-sm-8">@Model.Phucap?.ToString("N0") VNĐ</dd>
+
+                        <dt class="col-sm-4">Ngày vào làm:</dt>
+                        <dd class="col-sm-8">@(Model.Ngayvaolam?.ToString("dd/MM/yyyy") ?? "Chưa có")</dd>
+
+                        <dt class="col-sm-4">Ngày nghỉ việc:</dt>
+                        <dd class="col-sm-8">@(Model.Ngaynghiviec?.ToString("dd/MM/yyyy") ?? "Đang làm việc")</dd>
+
+                        <dt class="col-sm-4">Email:</dt>
+                        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Email) ? "Chưa cập nhật" : Model.Email)</dd>
+
+                        <dt class="col-sm-4">Số điện thoại:</dt>
+                        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.SoDienThoai) ? "Chưa cập nhật" : Model.SoDienThoai)</dd>
+
+                        <dt class="col-sm-4">Địa chỉ:</dt>
+                        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.DiaChi) ? "Chưa cập nhật" : Model.DiaChi)</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột bên phải: cập nhật liên hệ + đổi mật khẩu -->
+        <div class="col-lg-4">
+            <!-- Cập nhật thông tin liên hệ -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-info">📞 Thông tin liên hệ</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateContactInfo" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Email" class="form-label">Email</label>
+                            <input asp-for="Email" class="form-control" type="email" />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="SoDienThoai" class="form-label">Số điện thoại</label>
+                            <input asp-for="SoDienThoai" class="form-control" />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="DiaChi" class="form-label">Địa chỉ</label>
+                            <textarea asp-for="DiaChi" class="form-control" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-info btn-block">
+                                <i class="fas fa-save"></i> Lưu liên hệ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Đổi mật khẩu -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">🔐 Đổi mật khẩu</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ChangePassword" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group mb-3">
+                            <label for="OldPassword" class="form-label">Mật khẩu cũ</label>
+                            <input type="password" id="OldPassword" name="OldPassword" class="form-control" required />
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="NewPassword" class="form-label">Mật khẩu mới</label>
+                            <input type="password" id="NewPassword" name="NewPassword" class="form-control" required minlength="6" />
+                            <small class="form-text text-muted">Mật khẩu phải có ít nhất 6 ký tự</small>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="ConfirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
+                            <input type="password" id="ConfirmPassword" name="ConfirmPassword" class="form-control" required />
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-warning btn-block">
+                                <i class="fas fa-key"></i> Đổi mật khẩu
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

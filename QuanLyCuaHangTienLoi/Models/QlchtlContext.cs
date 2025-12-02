@@ -482,6 +482,7 @@ public partial class QlchtlContext : DbContext
             entity.Property(e => e.Ten).HasMaxLength(255);
             entity.Property(e => e.TrangThai).HasMaxLength(20);
             entity.Property(e => e.TrongLuong).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.HinhAnh).HasMaxLength(500);
 
             entity.HasOne(d => d.FkMaDanhMucNavigation).WithMany(p => p.SanPhams)
                 .HasForeignKey(d => d.FkMaDanhMuc)

@@ -1,0 +1,81 @@
+@model QuanLyCuaHangTienLoi.Models.DanhMuc
+
+@{
+    ViewData["Title"] = "Thêm danh mục";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Thêm danh mục mới</h1>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-success text-white">
+                    <h6 class="m-0 font-weight-bold">Thông tin danh mục</h6>
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        
+                        <div class="form-group">
+                            <label class="font-weight-bold">Mã danh mục</label>
+                            <input type="text" class="form-control" value="Tự động tạo" readonly style="background-color: #e9ecef;" />
+                            <small class="form-text text-muted">Mã danh mục sẽ được hệ thống tự động tạo</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="Ten" class="font-weight-bold">Tên danh mục <span class="text-danger">*</span></label>
+                            <input asp-for="Ten" class="form-control" required />
+                            <span asp-validation-for="Ten" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="MoTa" class="font-weight-bold">Mô tả</label>
+                            <textarea asp-for="MoTa" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="MoTa" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="TrangThai" class="font-weight-bold">Trạng thái <span class="text-danger">*</span></label>
+                            <select asp-for="TrangThai" class="form-control" required>
+                                <option value="">-- Chọn trạng thái --</option>
+                                <option value="Hoạt động">Hoạt động</option>
+                                <option value="Tạm dừng">Tạm dừng</option>
+                                <option value="Ngừng hoạt động">Ngừng hoạt động</option>
+                            </select>
+                            <span asp-validation-for="TrangThai" class="text-danger"></span>
+                        </div>
+
+                        <hr />
+
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-save"></i> Thêm mới
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">
+                            <i class="fas fa-ban"></i> Hủy
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

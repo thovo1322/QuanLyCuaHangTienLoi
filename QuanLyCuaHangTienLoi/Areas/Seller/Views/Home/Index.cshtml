@@ -1,0 +1,231 @@
+@model QuanLyCuaHangTienLoi.Areas.Seller.Controllers.SellerHomeViewModel
+@{
+    ViewData["Title"] = "Trang chủ nhân viên";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">👋 Chào mừng, @ViewData["EmployeeName"]!</h1>
+        <a asp-action="DangXuat" class="btn btn-danger btn-sm">
+            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Thống kê nhanh -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Số ngày làm việc
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @{
+                                    var soNgayLamViec = ViewData["SoNgayLamViec"] as int? ?? 0;
+                                }
+                                @soNgayLamViec ngày
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Chức năng
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Bán hàng</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Thông tin
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Cá nhân</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Lịch làm việc
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">Xem lịch</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Các chức năng chính -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Chức năng</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-12 mb-3">
+                            <a asp-area="Seller" asp-controller="BanHang" asp-action="Index" class="btn btn-outline-primary btn-block h-100">
+                                <i class="fas fa-cash-register fa-2x mb-2"></i><br>
+                                <strong>Bán hàng</strong><br>
+                                <small>Thanh toán hóa đơn</small>
+                            </a>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-12 mb-3">
+                            <a href="#" class="btn btn-outline-success btn-block h-100">
+                                <i class="fas fa-calendar fa-2x mb-2"></i><br>
+                                <strong>Xem lịch làm</strong><br>
+                               
+                            </a>
+                            </div>
+                         <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-12 mb-3">
+                                 <a asp-area="Seller" asp-controller="BanHang" asp-action="KiemTraSanPham" class="btn btn-outline-success btn-block h-100"> 
+                                     <i class="fas fa-box fa-2x mb-2"></i><br> 
+                                      <strong>Kiểm tra sản phẩm</strong><br> 
+                                  </a>
+ 							</div>
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-12 mb-3">
+                                    <a href="#" class="btn btn-outline-success btn-block h-100">
+                                        <i class="fas fa-box fa-2x mb-2"></i><br>
+                                        <strong>Đóng ca</strong><br>
+                                    </a>
+                                  </div>
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-12 mb-3">
+                                 <a href="#" class="btn btn-outline-info btn-block h-100">
+                                <i class="fas fa-clock fa-2x mb-2"></i><br>
+                                <strong>Chấm công</strong><br>
+                                <small>Ghi nhận giờ làm</small>
+                                 </a>
+                                 </div>
+
+                        <div class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-12 mb-3">
+                                  <a asp-action="MyProfile" class="btn btn-outline-warning btn-block h-100">
+                                <i class="fas fa-user-circle fa-2x mb-2"></i><br>
+                                <strong>Thông tin cá nhân</strong><br>
+                                <small>Xem và cập nhật</small>
+                            </a>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                        <h6 class="m-0 font-weight-bold text-primary">📋 Lịch Sử Giao Dịch</h6>
+                                        <form method="get" asp-action="Index" class="d-flex align-items-center gap-2">
+                                            <label for="selectedDate" class="mb-0">Chọn ngày:</label>
+                                            <input type="date" 
+                                                   id="selectedDate" 
+                                                   name="selectedDate" 
+                                                   value="@Model.SelectedDate.ToString("yyyy-MM-dd")" 
+                                                   max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                                                   class="form-control form-control-sm" 
+                                                   style="width: auto;"
+                                                   onchange="this.form.submit()" />
+                                        </form>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <strong>Ngày: @Model.SelectedDate.ToString("dd/MM/yyyy")</strong>
+                                            @if (Model.SelectedDate.Date == DateTime.Today.Date)
+                                            {
+                                                <span class="badge badge-success ml-2">Hôm nay</span>
+                                            }
+                                            <span class="text-muted ml-2">
+                                                (@Model.RecentOrders.Count đơn hàng)
+                                            </span>
+                                        </div>
+                                        @if (Model != null && Model.RecentOrders != null && Model.RecentOrders.Any())
+                                        {
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-hover" width="100%" cellspacing="0">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th>Mã đơn hàng</th>
+                                                            <th>Nhân viên</th>
+                                                            <th>Giờ tạo</th>
+                                                            <th>Tổng tiền</th>
+                                                            <th>Phương thức thanh toán</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var order in Model.RecentOrders)
+                                                        {
+                                                            <tr style="cursor: pointer;" onclick="window.location.href='@Url.Action("Details", "Home", new { area = "Seller", id = order.MaDonHang })'">
+                                                                <td><strong>#@order.MaDonHang</strong></td>
+                                                                <td>@(order.FkMaNvNavigation?.HoTen ?? "N/A")</td>
+                                                                <td>@(order.NgayTao?.ToString("HH:mm") ?? "N/A")</td>
+                                                                <td><strong class="text-primary">@order.TongTienSauGiam.ToString("N0") VNĐ</strong></td>
+                                                                <td>
+                                                                    <span class="text-dark">@(order.PhuongThucThanhToan ?? "N/A")</span>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr class="table-info">
+                                                            <td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
+                                                            <td colspan="2">
+                                                                <strong class="text-primary">
+                                                                    @Model.TotalAmount.ToString("N0") VNĐ
+                                                                </strong>
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="text-center text-muted py-4">
+                                                <i class="fas fa-inbox fa-3x mb-3"></i>
+                                                <p>Không có giao dịch nào trong ngày @Model.SelectedDate.ToString("dd/MM/yyyy")</p>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -36,24 +36,26 @@
             }
             */
 
+            // Tạo các chức vụ
+            if (!context.Chucvus.Any())
+            {
+                context.Chucvus.AddRange(
+                    new Chucvu { IdChucvu = 1, TenVaiTro = "Quản lý cửa hàng" },
+                    new Chucvu { IdChucvu = 2, TenVaiTro = "Nhân viên cửa hàng" }
+                );
+                context.SaveChanges();
+            }
+
             // Thêm dữ liệu admin để đăng nhập
             if (!context.NhanViens.Any())
             {
-                // Tạo chức vụ admin
-                var adminRole = new Chucvu
-                {
-                    IdChucvu = 1,
-                    TenVaiTro = "Admin"
-                };
-                context.Chucvus.Add(adminRole);
-
-                // Tạo nhân viên admin
+                // Tạo nhân viên admin với chức vụ "Quản lý cửa hàng"
                 var adminUser = new NhanVien
                 {
                     MaNv = 1,
                     TenNv = "admin",
                     MatKhauHash = HashPassword("admin123"), // Mật khẩu: admin123
-                    IdChucvu = 1,
+                    IdChucvu = 1, // Quản lý cửa hàng
                     Luongcoban = 10000000,
                     Phucap = 2000000
                 };

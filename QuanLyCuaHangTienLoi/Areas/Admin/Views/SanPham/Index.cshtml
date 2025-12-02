@@ -1,19 +1,53 @@
 ﻿@model IEnumerable<QuanLyCuaHangTienLoi.Models.SanPham>
 
-<h2>Quản lý sản phẩm</h2>
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">📦 Quản lý sản phẩm</h1>
+        <div>
+            <a asp-area="Admin" asp-controller="BangDieuKhien" asp-action="Index" class="btn btn-secondary btn-sm me-2">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+            <a asp-area="Admin" asp-controller="QuanLyTonKho" asp-action="CapNhatTonKho" class="btn btn-warning btn-sm me-2">
+                <i class="fas fa-box-open fa-sm text-white-50"></i> Xuất hàng
+            </a>
+            <form asp-action="UpdateAllStatus" method="post" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn cập nhật trạng thái tất cả sản phẩm có trạng thái không hợp lệ (Hoạt động, v.v.) thành Còn hàng hoặc Hết hàng?');">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-info btn-sm me-2">
+                    <i class="fas fa-sync-alt fa-sm text-white-50"></i> Cập nhật trạng thái
+                </button>
+            </form>
+            <a asp-action="Create" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus fa-sm text-white-50"></i> Thêm sản phẩm
+            </a>
+        </div>
+    </div>
 
-<form method="get" asp-action="Index">
-    <input type="text" name="search" placeholder="Tìm theo tên hoặc mã vạch..." />
-    <button type="submit" class="btn btn-primary">Tìm</button>
-</form>
-
-<a asp-action="Create" class="btn btn-success mt-3">+ Thêm sản phẩm</a>
+    <form method="get" asp-action="Index" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Tìm theo tên hoặc mã vạch..." />
+            <button type="submit" class="btn btn-primary">Tìm</button>
+        </div>
+    </form>
 @if (TempData["SuccessMessage"] != null)
 {
-    @* <div class="alert alert-success alert-dismissible fade show" role="alert"> *@
-    @*     @TempData["SuccessMessage"] *@
-    @*     <button type="button" class="btn-close" data-bs-dismiss="alert"></button> *@
-    @* </div> *@
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        @TempData["InfoMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
 }
 <table class="table table-striped mt-3">
     <thead>
@@ -25,7 +59,7 @@
             <th>Danh mục</th>
             <th>Nhà cung cấp</th>
             <th>Trạng thái</th>
-            <th></th>
+            <th>Thao tác</th>
         </tr>
     </thead>
     <tbody>
@@ -38,12 +72,69 @@
                 <td>@sp.SoLuong</td>
                 <td>@sp.FkMaDanhMucNavigation?.Ten</td>
                 <td>@sp.MaNccNavigation?.TenNcc</td>
-                <td>@sp.TrangThai</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@sp.MaSanPham" class="btn btn-sm btn-warning">Sửa</a>
-                    <a asp-action="Delete" asp-route-id="@sp.MaSanPham" class="btn btn-sm btn-danger">Xóa</a>
+                    @{
+                        // Tự động xác định trạng thái dựa trên số lượng nếu trạng thái không hợp lệ
+                        var displayStatus = sp.TrangThai;
+                        if (displayStatus != "Còn hàng" && displayStatus != "Hết hàng")
+                        {
+                            // Nếu số lượng > 0 thì "Còn hàng", ngược lại "Hết hàng"
+                            displayStatus = (sp.SoLuong.HasValue && sp.SoLuong.Value > 0) ? "Còn hàng" : "Hết hàng";
+                        }
+                        // Đồng bộ: nếu số lượng = 0 thì luôn là "Hết hàng"
+                        else if (!sp.SoLuong.HasValue || sp.SoLuong.Value <= 0)
+                        {
+                            displayStatus = "Hết hàng";
+                        }
+                        // Đồng bộ: nếu số lượng > 0 thì luôn là "Còn hàng"
+                        else if (sp.SoLuong.Value > 0)
+                        {
+                            displayStatus = "Còn hàng";
+                        }
+                    }
+                    @if (displayStatus == "Còn hàng")
+                    {
+                        <span class="badge badge-success">Còn hàng</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-danger">Hết hàng</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@sp.MaSanPham" class="btn btn-sm btn-info mb-1" title="Chi tiết">
+                        <i class="fas fa-info-circle"></i> Chi tiết
+                    </a>
+                    <a asp-action="Edit" asp-route-id="@sp.MaSanPham" class="btn btn-sm btn-warning mb-1" title="Sửa">
+                        <i class="fas fa-edit"></i> Sửa
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@sp.MaSanPham" class="btn btn-sm btn-danger mb-1" title="Xóa">
+                        <i class="fas fa-trash"></i> Xóa
+                    </a>
                 </td>
             </tr>
         }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .badge {
+        padding: 0.35em 0.65em;
+        font-size: 0.875em;
+        font-weight: 600;
+        border-radius: 0.25rem;
+    }
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+    .badge-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+    .badge-warning {
+        background-color: #ffc107;
+        color: #212529;
+    }
+</style>

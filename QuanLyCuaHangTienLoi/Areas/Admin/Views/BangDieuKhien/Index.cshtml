@@ -9,12 +9,19 @@
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h1 class="h3 mb-0 text-gray-800 text-align:center">Hệ Thống Quản Lý</h1>
-                <div class="col-lg-3 col-md-4 col-sm-6 mb-3 ">
-                    <a asp-area="Admin" asp-controller="DangNhap" asp-action="DangXuat" class="btn btn-outline-danger btn-block h-100">
-                        <i class="fas fa-sign-out-alt fa-2x mb-2"></i><br>
-                        <strong>🚪 Đăng xuất</strong><br>
-                       
-                    </a>
+                <div class="d-flex gap-2">
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                        <a asp-area="Admin" asp-controller="NhanVien" asp-action="MyProfile" class="btn btn-outline-info btn-block h-100">
+                            <i class="fas fa-user fa-2x mb-2"></i><br>
+                            <strong>👤 Thông tin cá nhân</strong><br>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                        <a asp-area="Admin" asp-controller="DangNhap" asp-action="DangXuat" class="btn btn-outline-danger btn-block h-100">
+                            <i class="fas fa-sign-out-alt fa-2x mb-2"></i><br>
+                            <strong>🚪 Đăng xuất</strong><br>
+                        </a>
+                    </div>
                 </div>
                 @* <div class="text-muted"> *@
                 @*     Xin chào, @Context.Session.GetString("AdminName") *@
@@ -147,7 +154,7 @@
 
                         <!-- Quản lý tồn kho -->
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
-                            <a href="#" class="btn btn-outline-secondary btn-block h-100">
+                            <a asp-area="Admin" asp-controller="QuanLyTonKho" asp-action="Index" class="btn btn-outline-secondary btn-block h-100">
                                 <i class="fas fa-warehouse fa-2x mb-2"></i><br>
                                 <strong>📊 Quản lý tồn kho</strong><br>
                                 @* <small>Kiểm tra hàng tồn</small> *@

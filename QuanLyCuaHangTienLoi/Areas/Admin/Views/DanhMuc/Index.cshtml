@@ -20,6 +20,93 @@
       font-size: 20px;
       font-weight: bold;
       border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-header {
+      padding: 6px 12px;
+      background: white;
+      color: #00b4d8;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-header:hover {
+      background: #f0f0f0;
+    }
+
+    .search-container {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .search-form {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .autocomplete-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-top: none;
+      border-radius: 0 0 5px 5px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .autocomplete-results.show {
+      display: block;
+    }
+
+    .autocomplete-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .autocomplete-item:hover,
+    .autocomplete-item.active {
+      background-color: #f8f9fa;
+    }
+
+    .autocomplete-item:last-child {
+      border-bottom: none;
     }
 
     .category {
@@ -46,8 +133,58 @@
       background-color: #e1f4ff;
     }
 
+    .category-header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex: 1;
+    }
+
+    .category-header-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .category-title {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .category-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .btn-action {
+      padding: 4px 8px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      text-decoration: none;
+      color: white;
+    }
+
+    .btn-edit {
+      background-color: #ffc107;
+    }
+
+    .btn-edit:hover {
+      background-color: #e0a800;
+    }
+
+    .btn-delete {
+      background-color: #dc3545;
+    }
+
+    .btn-delete:hover {
+      background-color: #c82333;
+    }
+
     .arrow {
       transition: transform 0.3s ease;
+      margin-left: 10px;
     }
 
     .category-content {
@@ -74,26 +211,90 @@
     .active .arrow {
       transform: rotate(90deg);
     }
+
+    .alert {
+      padding: 12px 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: 1px solid transparent;
+    }
+
+    .alert-success {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+      color: #155724;
+    }
+
+    .alert-danger {
+      background-color: #f8d7da;
+      border-color: #f5c6cb;
+      color: #721c24;
+    }
   </style>
 </head>
 <body>
 
+  <div class="header">
+    <span>🛒 Quản lý danh mục</span>
+    <div class="header-actions">
+      <a asp-area="Admin" asp-controller="BangDieuKhien" asp-action="Index" class="btn-header" style="background: #6c757d; color: white;">← Quay lại</a>
+      <a asp-action="Create" class="btn-header">+ Thêm danh mục</a>
+    </div>
+  </div>
 
+  @if (TempData["Success"] != null)
+  {
+      <div class="alert alert-success">
+          @TempData["Success"]
+      </div>
+  }
 
-  <div class="header">🛒 Quản lý danh mục</div>
-   
-  
-    @* <div class="category-header" onclick="toggleCategory(this)"> *@
-            
-    @*   <span>Đồ uống</span> *@
-    @*   <span class="arrow">▶</span> *@
-    @*   </div> *@
+  @if (TempData["Error"] != null)
+  {
+      <div class="alert alert-danger">
+          @TempData["Error"]
+      </div>
+  }
+
+  <!-- Form tìm kiếm với autocomplete -->
+  <div class="search-container">
+    <form method="get" asp-action="Index" class="search-form">
+      <div class="search-input-wrapper">
+        <input type="text" 
+               id="searchInput"
+               name="search" 
+               class="search-input" 
+               placeholder="Nhập tên danh mục để tìm kiếm..." 
+               value="@ViewBag.Search" 
+               autocomplete="off" />
+        <div id="autocompleteResults" class="autocomplete-results"></div>
+      </div>
+      <button type="submit" class="btn-header">🔍 Tìm kiếm</button>
+      @if (!string.IsNullOrEmpty(ViewBag.Search?.ToString()))
+      {
+          <a asp-action="Index" class="btn-header" style="background: #dc3545; color: white;">✕ Xóa bộ lọc</a>
+          <span style="color: #666; font-size: 14px;">
+              Tìm thấy @Model.Count() kết quả
+          </span>
+      }
+    </form>
+  </div>
+
     @foreach (var item in Model)
                     {
         <div class="category">
         <div class="category-header" onclick="toggleCategory(this)">
-                <h6>@item.Ten</h6>
+        <div class="category-header-left">
+          <h6 class="category-title">@item.Ten</h6>
                 <span class="arrow">▶</span>
+        </div>
+        <div class="category-header-right" onclick="event.stopPropagation();">
+          <div class="category-actions">
+            <a asp-action="Edit" asp-route-id="@item.MaDanhMuc" class="btn-action btn-edit">✏️ Sửa</a>
+            <a asp-action="Delete" asp-route-id="@item.MaDanhMuc" class="btn-action btn-delete"
+               onclick="return confirm('Bạn có chắc muốn xóa danh mục này?')">🗑️ Xóa</a>
+          </div>
+        </div>
                 </div>
             <div class="category-content">
                 @if (item.LoaiSanPhams != null && item.LoaiSanPhams.Any())
@@ -109,87 +310,95 @@
                 {
                     <p>Không có loại sản phẩm nào thuộc danh mục này.</p>
                 }
-                @* Bạn có thể thêm các nút Edit/Delete/Details ở đây nếu muốn *@
             </div>
         </div>
-                    }
-        
-        @* <div class="category-content"> *@
-        @*     <table> *@
-        @*         <tbody> *@
-        @*             @foreach (var item in Model) *@
-        @*             { *@
-                        
-                        @* <tr> *@
-                          
-                        @*     @* <td>@item.MoTa</td> *@ 
-                        @*     <li> *@
-                        @*         <a href="#" class="danhmuc-link" data-id="@item.MaDanhMuc">@item.Ten</a> *@
-                        @*         <div id="loai-container-@item.MaDanhMuc"></div> *@
-                        @*     </li> *@
-                        @*     @section scripts { *@
-                        @*         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> *@
-                        @*         <script> *@
-                        @*             $(document).ready(function(){ *@
-                        @*                 $(".danhmuc-link").click(function(e){ *@
-                        @*                     e.preventDefault(); *@
-                        @*                     var id = $(this).data("id"); *@
-                        @*                     $("#loai-container-" + id).load("/DanhMuc/LoaiByDanhMuc/" + id); *@
-                        @*                 }); *@
-                        @*             }); *@
-                        @*         </script> *@
-                        @* } *@
-                        @* </tr> *@
-                         
-                    @* <ul> *@
-                    @*     @foreach(var loai in item.LoaiSanPhams) *@
-                    @*     { *@
-                    @*         <li>@loai.TenLoai</li> *@
-                               
-                    @*      } *@
-                    @*     </ul> *@
-                    }
-           
-                </tbody>
-            </table>
-    </div>
-    
- 
-
-        @* <tbody> *@
-        @*     @foreach (var item in Model) *@
-        @*     { *@
-        @*         <tr> *@
-        @*             <td>@item.MaDanhMuc</td> *@
-        @*             <td>@item.Ten</td> *@
-        @*             <td>@item.MoTa</td> *@
-        @*             <td>@item.TrangThai</td> *@
-                   
-        @*             <td> *@
-        @*                 <div class="btn-group" role="group"> *@
-        @*                     <a asp-action="Details" asp-route-id="@item.MaDanhMuc" class="btn btn-info btn-sm"> *@
-        @*                         <i class="fas fa-eye"></i> *@
-        @*                     </a> *@
-
-        @*                     <a asp-action="Edit" asp-route-id="@item.MaDanhMuc" class="btn btn-warning btn-sm"> *@
-        @*                         <i class="fas fa-edit"></i> *@
-        @*                     </a> *@
-                            
-        @*                     <a asp-action="Delete" asp-route-id="@item.MaDanhMuc" class="btn btn-danger btn-sm" *@
-        @*                        onclick="return confirm('Bạn có chắc muốn xóa danh m này?')"> *@
-        @*                         <i class="fas fa-trash"></i> *@
-        @*                     </a> *@
-        @*                 </div> *@
-        @*             </td> *@
-        @*         </tr> *@
-        @*     } *@
-        @* </tbody> *@
-  </div>
+  }
 
   <script>
     function toggleCategory(element) {
       element.parentElement.classList.toggle("active");
     }
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      const searchInput = $('#searchInput');
+      const autocompleteResults = $('#autocompleteResults');
+      let currentFocus = -1;
+
+      searchInput.on('input', function() {
+        const term = $(this).val();
+        
+        if (term.length < 1) {
+          autocompleteResults.removeClass('show');
+          return;
+        }
+
+        // Gọi API để lấy gợi ý
+        $.ajax({
+          url: '@Url.Action("SearchSuggestions", "DanhMuc")',
+          type: 'GET',
+          data: { term: term },
+          success: function(data) {
+            if (data && data.length > 0) {
+              let html = '';
+              data.forEach(function(item) {
+                html += '<div class="autocomplete-item">' + item + '</div>';
+              });
+              autocompleteResults.html(html);
+              autocompleteResults.addClass('show');
+              currentFocus = -1;
+            } else {
+              autocompleteResults.removeClass('show');
+            }
+          }
+        });
+      });
+
+      // Xử lý khi click vào item gợi ý
+      $(document).on('click', '.autocomplete-item', function() {
+        searchInput.val($(this).text());
+        autocompleteResults.removeClass('show');
+        // Tự động submit form
+        searchInput.closest('form').submit();
+      });
+
+      // Xử lý phím tắt
+      searchInput.on('keydown', function(e) {
+        const items = $('.autocomplete-item');
+        
+        if (e.keyCode === 40) { // Arrow down
+          e.preventDefault();
+          currentFocus++;
+          if (currentFocus >= items.length) currentFocus = 0;
+          items.removeClass('active');
+          items.eq(currentFocus).addClass('active');
+        } else if (e.keyCode === 38) { // Arrow up
+          e.preventDefault();
+          currentFocus--;
+          if (currentFocus < 0) currentFocus = items.length - 1;
+          items.removeClass('active');
+          items.eq(currentFocus).addClass('active');
+        } else if (e.keyCode === 13) { // Enter
+          e.preventDefault();
+          if (currentFocus >= 0 && currentFocus < items.length) {
+            items.eq(currentFocus).click();
+          } else {
+            searchInput.closest('form').submit();
+          }
+        } else if (e.keyCode === 27) { // Escape
+          autocompleteResults.removeClass('show');
+        }
+      });
+
+      // Đóng autocomplete khi click ra ngoài
+      $(document).on('click', function(e) {
+        if (!$(e.target).closest('#searchInput, #autocompleteResults').length) {
+          autocompleteResults.removeClass('show');
+        }
+      });
+    });
   </script>
 </body>
 </html>

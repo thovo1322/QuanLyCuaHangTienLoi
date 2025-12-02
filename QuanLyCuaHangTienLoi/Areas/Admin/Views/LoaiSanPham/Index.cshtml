@@ -1,8 +1,17 @@
 ﻿@model IEnumerable<QuanLyCuaHangTienLoi.Models.LoaiSanPham>
 
-<h2>Quản lý loại sản phẩm</h2>
-
-<a asp-action="Create" class="btn btn-success mt-3">+ Thêm loại sản phẩm</a>
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">🏷️ Quản lý loại sản phẩm</h1>
+        <div>
+            <a asp-area="Admin" asp-controller="BangDieuKhien" asp-action="Index" class="btn btn-secondary btn-sm me-2">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+            <a asp-action="Create" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus fa-sm text-white-50"></i> Thêm loại sản phẩm
+            </a>
+        </div>
+    </div>
 
 <table class="table table-striped mt-3">
     <thead>
@@ -10,7 +19,7 @@
             <th>Mã Loại</th>
             <th>Tên Loại</th>
             <th>Mã Danh Mục</th>
-            <th></th>
+            <th>Tên Loại - Mã Danh Mục </th>
         </tr>
     </thead>
     <tbody>
@@ -20,12 +29,15 @@
                 <td>@lsp.MaLoai</td>
                 <td>@lsp.TenLoai</td>
                 <td>@lsp.MaDanhMuc</td>
-                @* <td>@lsp.MaDanhMucNavigation.Ten</td> *@
+                <td>@lsp.TenLoai</td>
+                <td>@lsp.MaDanhMucNavigation.MaDanhMuc</td>
+                 
                 <td>
                     <a asp-action="Edit" asp-route-id="@lsp.MaLoai" class="btn btn-sm btn-warning">Sửa</a>
-                    <a asp-action="Delete" asp-route-id="@lsp.TenLoai" class="btn btn-sm btn-danger">Xóa</a>
+                    <a asp-action="Delete" asp-route-id="@lsp.MaLoai" class="btn btn-sm btn-danger">Xóa</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+</div>
